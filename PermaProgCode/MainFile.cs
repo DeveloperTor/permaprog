@@ -80,8 +80,8 @@ internal class MyModConfig : SimpleModConfig {
       CreateCurrencyHeader();
       _optionContainer.AddChild(CreateButton("Add currency (debug)", "+500", Currency500));
       _optionContainer.AddChild(CreateDividerControl());
-
       _optionContainer.AddChild(CreateSectionHeader("Tier 1 upgrades"));
+
       CreateSlider(MainFile.Upgrades.StartGold);
       _optionContainer.AddChild(CreateButton(nameof(UpgradeButtonStartGold), "Cost", UpgradeButtonStartGold));
       _optionContainer.AddChild(CreateDividerControl());
@@ -89,22 +89,50 @@ internal class MyModConfig : SimpleModConfig {
       CreateSlider(MainFile.Upgrades.CurrencyGain);
       _optionContainer.AddChild(CreateButton(nameof(UpgradeButtonCurrencyGain), "Cost", UpgradeButtonCurrencyGain));
       _optionContainer.AddChild(CreateDividerControl());
-      
-      CreateSlider(MainFile.Upgrades.MaxHealth);
-      _optionContainer.AddChild(CreateButton(nameof(UpgradeButtonMaxHealth), "Cost", UpgradeButtonMaxHealth));
-      _optionContainer.AddChild(CreateDividerControl());
 
+      Tier2Upgrades(optionContainer);
+      Tier3Upgrades(optionContainer);
+      
       UpdateUi();
+   }
+
+   private void Tier2Upgrades(Control optionContainer) {
+      if (MainFile.Upgrades.TotalCurrentLevels < 5) {
+         optionContainer.AddChild(CreateSectionHeader("..some beings... ..are yet to... ..be revealed..."));
+         optionContainer.AddChild(CreateSectionHeader("???"));
+      }
+      else {
+         optionContainer.AddChild(CreateSectionHeader("Tier 2 upgrades"));
+         CreateSlider(MainFile.Upgrades.MaxHealth);
+         optionContainer.AddChild(CreateButton(nameof(UpgradeButtonMaxHealth), "Cost", UpgradeButtonMaxHealth));
+         optionContainer.AddChild(CreateDividerControl());
+      }
+   }
+
+   private void Tier3Upgrades(Control optionContainer) {
+      switch (MainFile.Upgrades.TotalCurrentLevels) {
+         case < 5:
+            break;
+         case < 10:
+            optionContainer.AddChild(CreateSectionHeader("..you have... ..done well... ..so far..."));
+            optionContainer.AddChild(CreateSectionHeader("???"));
+            break;
+         default:
+            optionContainer.AddChild(CreateSectionHeader("Tier 3 upgrades"));
+            optionContainer.AddChild(CreateSectionHeader("..some beings... ..are yet to... ..be created..."));
+            break;
+      }
    }
 
    /// SLIDERS
    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    public static int CurrentLevelStartGold { get; set; }
+
    [SliderRange(0.0, 1000.0)] public static double CurrentValueStartGold { get; set; }
 
    public static int CurrentLevelCurrencyGain { get; set; }
    [SliderRange(0.0, 1000.0)] public static double CurrentValueCurrencyGain { get; set; }
-   
+
    public static int CurrentLevelMaxHealth { get; set; }
    [SliderRange(0.0, 1000.0)] public static double CurrentValueMaxHealth { get; set; }
    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,9 +178,14 @@ internal class MyModConfig : SimpleModConfig {
    }
 
    private static void UpdateCurrentValues() {
-      MainFile.Upgrades.StartGold.CurrentLevel = CurrentLevelStartGold;
-      MainFile.Upgrades.CurrencyGain.CurrentLevel = CurrentLevelCurrencyGain;
-      MainFile.Upgrades.MaxHealth.CurrentLevel = CurrentLevelMaxHealth;
+      Array<int> currentLevels = [CurrentLevelStartGold, CurrentLevelCurrencyGain, CurrentLevelMaxHealth];
+      var totalCurrentLevels = 0;
+      for (var i = 0; i < currentLevels.Count; i++) {
+         MainFile.Upgrades.All[i].CurrentLevel = currentLevels[i];
+         totalCurrentLevels += MainFile.Upgrades.All[i].CurrentLevel;
+      }
+
+      MainFile.Upgrades.TotalCurrentLevels = totalCurrentLevels;
    }
 
    private static void UpdateCurrencyHeader() {
@@ -227,6 +260,8 @@ public class Upgradeable {
 }
 
 public class UpgDataContainer {
+   public int TotalCurrentLevels;
+
    public readonly List<Upgradeable> All;
    public readonly Upgradeable StartGold = new();
    public readonly Upgradeable CurrencyGain = new();
@@ -244,7 +279,7 @@ public class UpgDataContainer {
          CurrencyGain.Vals = [0, 10, 20, 30, 40, 50];
          CurrencyGain.UpgCosts = [100, 300, 500, 700, 900];
       }
-      
+
       {
          MaxHealth.MaxLevel = 5;
          MaxHealth.Vals = [0, 1, 2, 3, 4, 5];
@@ -261,7 +296,7 @@ public class UpgDataContainer {
 
       CurrencyGain.SliderName = nameof(MyModConfig.CurrentValueCurrencyGain);
       CurrencyGain.ButtonName = nameof(MyModConfig.UpgradeButtonCurrencyGain);
-      
+
       MaxHealth.SliderName = nameof(MyModConfig.CurrentValueMaxHealth);
       MaxHealth.ButtonName = nameof(MyModConfig.UpgradeButtonMaxHealth);
    }
