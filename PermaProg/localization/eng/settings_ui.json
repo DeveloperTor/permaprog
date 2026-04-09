@@ -1,5 +1,6 @@
 ﻿{
   "PERMAPROG.mod_title": "PermaProg",
+  "PERMAPROG-BALANCING_ENABLED.title": "Enable balancing",
   "PERMAPROG-CURRENCY_TEXT.title": "Currency available to spend:",
   "PERMAPROG-START_GOLD_VALUE.title": "Extra starting gold:",
   "PERMAPROG-CURRENCY_GAIN_VALUE.title": "Extra currency gained %:",
