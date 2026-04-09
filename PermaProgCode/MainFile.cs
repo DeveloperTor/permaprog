@@ -86,7 +86,7 @@ public static class IncrementCurrencyGained {
 public static class SaveDataAtEndOfRun {
    [HarmonyPrefix]
    public static void Prefix(RunState state, Player player, bool isVictory) {
-      MyModConfig.CurrencyAvailable += (int)MainFile.CurrencyGained;
+      MyModConfig.CurrencyAvailable += (int)(MainFile.CurrencyGained * (1 + MyModConfig.CurrencyMultiplierValue / 100));
       MainFile.CurrencyGained = 0.0;
       ModConfig.SaveDebounced<MyModConfig>();
    }
@@ -118,11 +118,9 @@ internal class MyModConfig : SimpleModConfig {
       CreateSlider(MainFile.Upgrades.MaxHealth);
       optionContainer.AddChild(CreateButton(nameof(UpgradeButtonMaxHealth), "Cost", UpgradeButtonMaxHealth));
       optionContainer.AddChild(CreateDividerControl());
-
-      // First UpdateUi is necessary for logic (need up-to-date values). The rest refresh after new elements are added.
-      UpdateUi();
+      
+      UpdateCurrentValues();
       Tier2Upgrades(optionContainer);
-      UpdateUi();
       Tier3Upgrades(optionContainer);
       UpdateUi();
    }
@@ -137,6 +135,10 @@ internal class MyModConfig : SimpleModConfig {
 
          CreateSlider(MainFile.Upgrades.CardUpgrades);
          optionContainer.AddChild(CreateButton(nameof(UpgradeButtonCardUpgrades), "Cost", UpgradeButtonCardUpgrades));
+         optionContainer.AddChild(CreateDividerControl());
+         
+         CreateSlider(MainFile.Upgrades.CurrencyMultiplier);
+         optionContainer.AddChild(CreateButton(nameof(UpgradeButtonCurrencyMultiplier), "Cost", UpgradeButtonCurrencyMultiplier));
          optionContainer.AddChild(CreateDividerControl());
       }
    }
@@ -169,6 +171,9 @@ internal class MyModConfig : SimpleModConfig {
 
    public static int CardUpgradesLevel { get; set; }
    [SliderRange(0.0, 1000.0)] public static double CardUpgradesValue { get; set; }
+   
+   public static int CurrencyMultiplierLevel { get; set; }
+   [SliderRange(0.0, 1000.0)] public static double CurrencyMultiplierValue { get; set; }
    //END OF SLIDERS/////////////////////////////////////////////////////////////////////////////////////////////////////
 
    //BUTTONS////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,6 +194,11 @@ internal class MyModConfig : SimpleModConfig {
 
    public static void UpgradeButtonCardUpgrades() {
       if (UpgradeButtonPressed(MainFile.Upgrades.CardUpgrades)) CardUpgradesLevel++;
+      UpdateUi();
+   }
+   
+   public static void UpgradeButtonCurrencyMultiplier() {
+      if (UpgradeButtonPressed(MainFile.Upgrades.CurrencyMultiplier)) CurrencyMultiplierLevel++;
       UpdateUi();
    }
 
@@ -216,7 +226,7 @@ internal class MyModConfig : SimpleModConfig {
 
    private static void UpdateCurrentValues() {
       Array<int> currentLevels =
-         [StartGoldLevel, CurrencyGainLevel, MaxHealthLevel, CardUpgradesLevel];
+         [StartGoldLevel, CurrencyGainLevel, MaxHealthLevel, CardUpgradesLevel, CurrencyMultiplierLevel];
       var totalCurrentLevels = 0;
       for (var i = 0; i < currentLevels.Count; i++) {
          MainFile.Upgrades.All[i].CurrentLevel = currentLevels[i];
@@ -304,6 +314,7 @@ public class UpgDataContainer {
    public readonly Upgradeable CurrencyGain = new();
    public readonly Upgradeable MaxHealth = new();
    public readonly Upgradeable CardUpgrades = new();
+   public readonly Upgradeable CurrencyMultiplier = new();
 
    public UpgDataContainer() {
       {
@@ -329,8 +340,14 @@ public class UpgDataContainer {
          CardUpgrades.Vals = [0, 1, 2, 3, 4, 5];
          CardUpgrades.UpgCosts = [100, 300, 500, 700, 900];
       }
+      
+      {
+         CurrencyMultiplier.MaxLevel = 5;
+         CurrencyMultiplier.Vals = [0, 5, 10, 15, 20, 25];
+         CurrencyMultiplier.UpgCosts = [100, 300, 500, 700, 900];
+      }
 
-      All = [StartGold, CurrencyGain, MaxHealth, CardUpgrades];
+      All = [StartGold, CurrencyGain, MaxHealth, CardUpgrades, CurrencyMultiplier];
       SetNames();
    }
 
@@ -346,6 +363,9 @@ public class UpgDataContainer {
 
       CardUpgrades.SliderName = nameof(MyModConfig.CardUpgradesValue);
       CardUpgrades.ButtonName = nameof(MyModConfig.UpgradeButtonCardUpgrades);
+      
+      CurrencyMultiplier.SliderName = nameof(MyModConfig.CurrencyMultiplierValue);
+      CurrencyMultiplier.ButtonName = nameof(MyModConfig.UpgradeButtonCurrencyMultiplier);
    }
 }
 //END OF UPGRADE DATA///////////////////////////////////////////////////////////////////////////////////////////////////
