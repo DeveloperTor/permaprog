@@ -37,8 +37,38 @@ public static class ApplyDataAtStartOfRun {
    [HarmonyPostfix]
    // ReSharper disable once InconsistentNaming
    public static void Postfix(Player __instance) {
-      __instance.Gold += (int)MyModConfig.CurrentValueStartGold;
-      __instance.Creature.SetMaxHpInternal(__instance.Creature.MaxHp + (int)MyModConfig.CurrentValueMaxHealth);
+      __instance.Gold += (int)MyModConfig.StartGoldValue;
+      __instance.Creature.SetMaxHpInternal(__instance.Creature.MaxHp + (int)MyModConfig.MaxHealthValue);
+      UpgradeCards(__instance);
+   }
+
+   private static void UpgradeCards(Player instance) {
+      var cards = instance.Deck.Cards;
+      var cardsToUpgrade = RandomlySelectedCards(cards, (int)MyModConfig.CardUpgradesValue, cards.Count);
+      foreach (var card in cardsToUpgrade) {
+         while (card.IsUpgradable) {
+            card.UpgradeInternal();
+            card.FinalizeUpgradeInternal();
+         }
+      }
+   }
+
+   // Ty Matthew Watson on StackOverflow
+   public static IEnumerable<T> RandomlySelectedCards<T>(IEnumerable<T> sequence, int count, int sequenceLength) {
+      var rng = new Random();
+      var available = sequenceLength;
+      var remaining = count;
+
+      using var iterator = sequence.GetEnumerator();
+      for (var current = 0; current < sequenceLength; ++current) {
+         iterator.MoveNext();
+         if (rng.NextDouble() < remaining / (double)available) {
+            yield return iterator.Current;
+            --remaining;
+         }
+
+         --available;
+      }
    }
 }
 
@@ -48,7 +78,7 @@ public static class ApplyDataAtStartOfRun {
 public static class IncrementCurrencyGained {
    [HarmonyPrefix]
    public static void Prefix(decimal amount, Player player, bool wasStolenBack = false) {
-      MainFile.CurrencyGained += (double)amount * (1 + MyModConfig.CurrentValueCurrencyGain / 100);
+      MainFile.CurrencyGained += (double)amount * (1 + MyModConfig.CurrencyGainValue / 100);
    }
 }
 
@@ -84,11 +114,15 @@ internal class MyModConfig : SimpleModConfig {
       CreateSlider(MainFile.Upgrades.CurrencyGain);
       _optionContainer.AddChild(CreateButton(nameof(UpgradeButtonCurrencyGain), "Cost", UpgradeButtonCurrencyGain));
       _optionContainer.AddChild(CreateDividerControl());
-      
+
+      CreateSlider(MainFile.Upgrades.MaxHealth);
+      optionContainer.AddChild(CreateButton(nameof(UpgradeButtonMaxHealth), "Cost", UpgradeButtonMaxHealth));
+      optionContainer.AddChild(CreateDividerControl());
+
       // First UpdateUi is necessary for logic (need up-to-date values). The rest refresh after new elements are added.
       UpdateUi();
       Tier2Upgrades(optionContainer);
-      UpdateUi(); 
+      UpdateUi();
       Tier3Upgrades(optionContainer);
       UpdateUi();
    }
@@ -100,8 +134,9 @@ internal class MyModConfig : SimpleModConfig {
       }
       else {
          optionContainer.AddChild(CreateSectionHeader("Tier 2 upgrades"));
-         CreateSlider(MainFile.Upgrades.MaxHealth);
-         optionContainer.AddChild(CreateButton(nameof(UpgradeButtonMaxHealth), "Cost", UpgradeButtonMaxHealth));
+
+         CreateSlider(MainFile.Upgrades.CardUpgrades);
+         optionContainer.AddChild(CreateButton(nameof(UpgradeButtonCardUpgrades), "Cost", UpgradeButtonCardUpgrades));
          optionContainer.AddChild(CreateDividerControl());
       }
    }
@@ -123,29 +158,37 @@ internal class MyModConfig : SimpleModConfig {
    //END OF UI GENERATION///////////////////////////////////////////////////////////////////////////////////////////////
 
    //SLIDERS////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   public static int CurrentLevelStartGold { get; set; }
-   [SliderRange(0.0, 1000.0)] public static double CurrentValueStartGold { get; set; }
+   public static int StartGoldLevel { get; set; }
+   [SliderRange(0.0, 1000.0)] public static double StartGoldValue { get; set; }
 
-   public static int CurrentLevelCurrencyGain { get; set; }
-   [SliderRange(0.0, 1000.0)] public static double CurrentValueCurrencyGain { get; set; }
+   public static int CurrencyGainLevel { get; set; }
+   [SliderRange(0.0, 1000.0)] public static double CurrencyGainValue { get; set; }
 
-   public static int CurrentLevelMaxHealth { get; set; }
-   [SliderRange(0.0, 1000.0)] public static double CurrentValueMaxHealth { get; set; }
+   public static int MaxHealthLevel { get; set; }
+   [SliderRange(0.0, 1000.0)] public static double MaxHealthValue { get; set; }
+
+   public static int CardUpgradesLevel { get; set; }
+   [SliderRange(0.0, 1000.0)] public static double CardUpgradesValue { get; set; }
    //END OF SLIDERS/////////////////////////////////////////////////////////////////////////////////////////////////////
 
    //BUTTONS////////////////////////////////////////////////////////////////////////////////////////////////////////////
    public static void UpgradeButtonStartGold() {
-      if (UpgradeButtonPressed(MainFile.Upgrades.StartGold)) CurrentLevelStartGold++;
+      if (UpgradeButtonPressed(MainFile.Upgrades.StartGold)) StartGoldLevel++;
       UpdateUi();
    }
 
    public static void UpgradeButtonCurrencyGain() {
-      if (UpgradeButtonPressed(MainFile.Upgrades.CurrencyGain)) CurrentLevelCurrencyGain++;
+      if (UpgradeButtonPressed(MainFile.Upgrades.CurrencyGain)) CurrencyGainLevel++;
       UpdateUi();
    }
 
    public static void UpgradeButtonMaxHealth() {
-      if (UpgradeButtonPressed(MainFile.Upgrades.MaxHealth)) CurrentLevelMaxHealth++;
+      if (UpgradeButtonPressed(MainFile.Upgrades.MaxHealth)) MaxHealthLevel++;
+      UpdateUi();
+   }
+
+   public static void UpgradeButtonCardUpgrades() {
+      if (UpgradeButtonPressed(MainFile.Upgrades.CardUpgrades)) CardUpgradesLevel++;
       UpdateUi();
    }
 
@@ -172,7 +215,8 @@ internal class MyModConfig : SimpleModConfig {
    }
 
    private static void UpdateCurrentValues() {
-      Array<int> currentLevels = [CurrentLevelStartGold, CurrentLevelCurrencyGain, CurrentLevelMaxHealth];
+      Array<int> currentLevels =
+         [StartGoldLevel, CurrencyGainLevel, MaxHealthLevel, CardUpgradesLevel];
       var totalCurrentLevels = 0;
       for (var i = 0; i < currentLevels.Count; i++) {
          MainFile.Upgrades.All[i].CurrentLevel = currentLevels[i];
@@ -259,6 +303,7 @@ public class UpgDataContainer {
    public readonly Upgradeable StartGold = new();
    public readonly Upgradeable CurrencyGain = new();
    public readonly Upgradeable MaxHealth = new();
+   public readonly Upgradeable CardUpgrades = new();
 
    public UpgDataContainer() {
       {
@@ -279,19 +324,28 @@ public class UpgDataContainer {
          MaxHealth.UpgCosts = [100, 300, 500, 700, 900];
       }
 
-      All = [StartGold, CurrencyGain, MaxHealth];
+      {
+         CardUpgrades.MaxLevel = 5;
+         CardUpgrades.Vals = [0, 1, 2, 3, 4, 5];
+         CardUpgrades.UpgCosts = [100, 300, 500, 700, 900];
+      }
+
+      All = [StartGold, CurrencyGain, MaxHealth, CardUpgrades];
       SetNames();
    }
 
    private void SetNames() {
-      StartGold.SliderName = nameof(MyModConfig.CurrentValueStartGold);
+      StartGold.SliderName = nameof(MyModConfig.StartGoldValue);
       StartGold.ButtonName = nameof(MyModConfig.UpgradeButtonStartGold);
 
-      CurrencyGain.SliderName = nameof(MyModConfig.CurrentValueCurrencyGain);
+      CurrencyGain.SliderName = nameof(MyModConfig.CurrencyGainValue);
       CurrencyGain.ButtonName = nameof(MyModConfig.UpgradeButtonCurrencyGain);
 
-      MaxHealth.SliderName = nameof(MyModConfig.CurrentValueMaxHealth);
+      MaxHealth.SliderName = nameof(MyModConfig.MaxHealthValue);
       MaxHealth.ButtonName = nameof(MyModConfig.UpgradeButtonMaxHealth);
+
+      CardUpgrades.SliderName = nameof(MyModConfig.CardUpgradesValue);
+      CardUpgrades.ButtonName = nameof(MyModConfig.UpgradeButtonCardUpgrades);
    }
 }
 //END OF UPGRADE DATA///////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,10 +1,12 @@
 ﻿{
   "PERMAPROG.mod_title": "PermaProg",
   "PERMAPROG-CURRENCY_TEXT.title": "Currency available to spend:",
-  "PERMAPROG-CURRENT_VALUE_START_GOLD.title": "Extra starting gold:",
-  "PERMAPROG-CURRENT_VALUE_CURRENCY_GAIN.title": "Extra currency gained %:",
-  "PERMAPROG-CURRENT_VALUE_MAX_HEALTH.title": "Extra max health:",
+  "PERMAPROG-START_GOLD_VALUE.title": "Extra starting gold:",
+  "PERMAPROG-CURRENCY_GAIN_VALUE.title": "Extra currency gained %:",
+  "PERMAPROG-MAX_HEALTH_VALUE.title": "Extra max health:",
+  "PERMAPROG-CARD_UPGRADES_VALUE.title": "Upgraded starting cards:",
   "PERMAPROG-UPGRADE_BUTTON_START_GOLD.title": "Upgrade +10 gold",
   "PERMAPROG-UPGRADE_BUTTON_CURRENCY_GAIN.title": "Upgrade +10 %",
-  "PERMAPROG-UPGRADE_BUTTON_MAX_HEALTH.title": "Upgrade +1 hp"
+  "PERMAPROG-UPGRADE_BUTTON_MAX_HEALTH.title": "Upgrade +1 hp",
+  "PERMAPROG-UPGRADE_BUTTON_CARD_UPGRADES.title": "Upgrade +1 card"
 }
