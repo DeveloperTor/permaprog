@@ -1,7 +1,6 @@
 ﻿0) figure out how to apply it :)
-1) Slider
-2) Button
-3) new Upgradeable in UpgContainer (remember to include in 'All')
-5) entry in UpdateCurrentValues()
-6) entry in SetupConfigUI()
-7) entry in settings_ui.json
+1) Slider variables
+2) Button function
+3) new Upgradeable in UpgContainer
+4) entry in SetupConfigUI()
+5) entry in settings_ui.json
