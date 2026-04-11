@@ -96,7 +96,10 @@ public static class IncreaseCurrencyGained {
 [HarmonyPatch(typeof(AchievementsHelper), "AfterRunEnded")]
 public static class SaveDataAtEndOfRun {
   public static void Prefix(RunState state, Player player, bool isVictory) {
-    PermaProg.CurrencyAvailable = (int)(PermaProg.CurrencyAvailable * (1 + PermaProg.CurrencyInterestValue / 100));
+    if (state.ActFloor >= 2) {
+      PermaProg.CurrencyAvailable = (int)(PermaProg.CurrencyAvailable * (1 + PermaProg.CurrencyInterestValue / 100));
+    }
+
     PermaProg.CurrencyAvailable += (int)PermaProg.CurrencyGained;
     PermaProg.CurrencyGained = 0.0;
     ModConfig.SaveDebounced<PermaProg>();
@@ -145,7 +148,7 @@ internal class PermaProg : SimpleModConfig {
     }
     else {
       optionContainer.AddChild(CreateSectionHeader("Tier 2 upgrades"));
-      CreateUpgradeableUi(Upgrades.CurrencyInterest, UpgradeButtonCurrencyInterest);
+      CreateUpgradeableUi(Upgrades.CurrencyInterest, UpgradeButtonCurrencyInterest, true);
       CreateUpgradeableUi(Upgrades.GoldGain, UpgradeButtonGoldGain);
       CreateUpgradeableUi(Upgrades.CardUpgrades, UpgradeButtonCardUpgrades);
     }
@@ -305,8 +308,10 @@ internal class PermaProg : SimpleModConfig {
     _optionContainer?.AddChild(headerRow);
   }
 
-  private void CreateUpgradeableUi(Upgradeable upg, Action onPressed) {
-    _optionContainer?.AddChild(CreateSliderOption(GetPropertyInfo(upg.SliderName)));
+  private void CreateUpgradeableUi(Upgradeable upg, Action onPressed, bool addHoverTip = false) {
+    var slider = CreateSliderOption(GetPropertyInfo(upg.SliderName));
+    if (addHoverTip) slider.AddHoverTip();
+    _optionContainer?.AddChild(slider);
     _optionContainer?.AddChild(CreateButton(upg.ButtonName, "Default text", onPressed));
     _optionContainer?.AddChild(CreateDividerControl());
     upg.Unlocked = true;
