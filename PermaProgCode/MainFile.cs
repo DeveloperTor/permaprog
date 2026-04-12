@@ -8,16 +8,19 @@ using MegaCrit.Sts2.Core.Achievements;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Modding;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Characters;
 using MegaCrit.Sts2.Core.Nodes.Screens.GameOverScreen;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Runs;
+using PermaProg.PermaProgCode.Relics;
 
 namespace PermaProg.PermaProgCode;
 
 [ModInitializer(nameof(Initialize))]
 public partial class MainFile : Node {
   public const string ModId = "PermaProg"; //Used for resource filepath
+  public const string ResPath = $"res://{ModId}";
 
   public static MegaCrit.Sts2.Core.Logging.Logger Logger { get; } =
     new(ModId, MegaCrit.Sts2.Core.Logging.LogType.Generic);
@@ -59,6 +62,14 @@ public static class PermaProgPatches {
 
       --available;
     }
+  }
+
+  [HarmonyPatch(typeof(Player), "PopulateStartingRelics")]
+  [HarmonyPostfix]
+  public static void AddPpRelic(Player __instance) {
+    var ppRelic = ModelDb.Relic<PpRelic>().ToMutable();
+    ppRelic.FloorAddedToDeck = 1;
+    __instance.AddRelicInternal(ppRelic, silent: true);
   }
 
   [HarmonyPatch(typeof(GoldReward), MethodType.Constructor, [typeof(int), typeof(int), typeof(Player), typeof(bool)])]
