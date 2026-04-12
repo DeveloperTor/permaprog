@@ -3,19 +3,19 @@
   "PERMAPROG-BALANCING_ENABLED.title": "Enable balancing",
   "PERMAPROG-CURRENCY_TEXT.title": "Currency available to spend:",
   "PERMAPROG-START_GOLD_VALUE.title": "Extra starting gold:",
-  "PERMAPROG-CURRENCY_GAIN_VALUE.title": "Extra currency gained %:",
+  "PERMAPROG-CURRENCY_GAIN_VALUE.title": "Extra currency gained:",
   "PERMAPROG-MAX_HEALTH_VALUE.title": "Extra max health:",
   "PERMAPROG-CARD_UPGRADES_VALUE.title": "Upgraded starting cards:",
   "PERMAPROG-CURRENCY_INTEREST_VALUE.title": "Currency interest:",
   "PERMAPROG-GOLD_GAIN_VALUE.title": "Gold gained:",
   
-  "PERMAPROG-UPGRADE_BUTTON_START_GOLD.title": "Upgrade +10 gold",
-  "PERMAPROG-UPGRADE_BUTTON_CURRENCY_GAIN.title": "Upgrade +10 %",
-  "PERMAPROG-UPGRADE_BUTTON_MAX_HEALTH.title": "Upgrade +1 hp",
+  "PERMAPROG-UPGRADE_BUTTON_START_GOLD.title": "Upgrade +20 gold",
+  "PERMAPROG-UPGRADE_BUTTON_CURRENCY_GAIN.title": "Upgrade +30 %",
+  "PERMAPROG-UPGRADE_BUTTON_MAX_HEALTH.title": "Upgrade +2 hp",
   "PERMAPROG-UPGRADE_BUTTON_CARD_UPGRADES.title": "Upgrade +1 card",
-  "PERMAPROG-UPGRADE_BUTTON_CURRENCY_INTEREST.title": "Upgrade +1 %",
-  "PERMAPROG-UPGRADE_BUTTON_GOLD_GAIN.title": "Upgrade +5 %",
+  "PERMAPROG-UPGRADE_BUTTON_CURRENCY_INTEREST.title": "Upgrade +4 %",
+  "PERMAPROG-UPGRADE_BUTTON_GOLD_GAIN.title": "Upgrade +10 %",
 
   "PERMAPROG-CURRENCY_INTEREST_VALUE.hover.title": "Currency interest",
-  "PERMAPROG-CURRENCY_INTEREST_VALUE.hover.desc": "Only applies if Act 2 is reached"
+  "PERMAPROG-CURRENCY_INTEREST_VALUE.hover.desc": "Only applies if Act 2 is reached during the run"
 }

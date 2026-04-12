@@ -360,51 +360,39 @@ public class UpgDataContainer {
     }
 
     {
-      StartGold.MaxLevel = 20;
-      StartGold.Vals =
-        [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200];
-      StartGold.UpgCosts = [
-        0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900
-      ];
+      StartGold.MaxLevel = 10;
+      StartGold.Vals = [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200];
+      StartGold.UpgCosts = [0, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800];
     }
 
     {
-      CurrencyGain.MaxLevel = 20;
-      CurrencyGain.Vals =
-        [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200];
-      CurrencyGain.UpgCosts = [
-        100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000
-      ];
+      CurrencyGain.MaxLevel = 10;
+      CurrencyGain.Vals = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
+      CurrencyGain.UpgCosts = [100, 300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700];
     }
 
     {
-      MaxHealth.MaxLevel = 20;
-      MaxHealth.Vals = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-      MaxHealth.UpgCosts = [
-        100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000
-      ];
+      MaxHealth.MaxLevel = 10;
+      MaxHealth.Vals = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
+      MaxHealth.UpgCosts = [150, 500, 850, 1200, 1550, 1900, 2250, 2600, 2950, 3300];
     }
 
     {
       CardUpgrades.MaxLevel = 10;
       CardUpgrades.Vals = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-      CardUpgrades.UpgCosts = [1000, 1200, 1400, 1600, 1800, 2000, 2500, 3000, 3500, 4000];
+      CardUpgrades.UpgCosts = [1000, 1400, 1800, 2200, 2700, 3200, 3700, 4200, 4700, 5000];
     }
 
     {
-      CurrencyInterest.MaxLevel = 20;
-      CurrencyInterest.Vals = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-      CurrencyInterest.UpgCosts = [
-        100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000
-      ];
+      CurrencyInterest.MaxLevel = 5;
+      CurrencyInterest.Vals = [0, 4, 8, 12, 16, 20];
+      CurrencyInterest.UpgCosts = [500, 1000, 1500, 2000, 2500];
     }
 
     {
-      GoldGain.MaxLevel = 19;
-      GoldGain.Vals = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 95, 100];
-      GoldGain.UpgCosts = [
-        100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900
-      ];
+      GoldGain.MaxLevel = 10;
+      GoldGain.Vals = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+      GoldGain.UpgCosts = [100, 300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700];
     }
 
     // Sanity check
