@@ -123,11 +123,9 @@ internal class PermaProg : SimpleModConfig {
   //UI GENERATION///////////////////////////////////////////////////////////////////////////////////////////////////////
   public override void SetupConfigUI(Control optionContainer) {
     _optionContainer = optionContainer;
-    AddRestoreDefaultsButton(_optionContainer);
 
     _optionContainer.AddChild(CreateToggleOption(GetPropertyInfo(nameof(BalancingEnabled))));
     CreateCurrencyHeader();
-    _optionContainer.AddChild(CreateButton("Add currency (debug)", "+5000", Currency5000));
     _optionContainer.AddChild(CreateDividerControl());
 
     _optionContainer.AddChild(CreateSectionHeader("Tier 1 upgrades"));
@@ -146,12 +144,6 @@ internal class PermaProg : SimpleModConfig {
     if (Upgrades.TotalCurrentLevels < 5) {
       optionContainer.AddChild(CreateSectionHeader("..some beings... ..are yet to... ..be revealed..."));
       optionContainer.AddChild(CreateSectionHeader("???"));
-
-      /* These are temporarily(?) necessary as the restore defaults button triggers an error log */
-      /* when: 1) tier 2 enabled 2) restore defaults 3) leave and re-enter settings menu. */
-      Upgrades.CurrencyInterest.Unlocked = false;
-      Upgrades.GoldGain.Unlocked = false;
-      Upgrades.CardUpgrades.Unlocked = false;
     }
     else {
       optionContainer.AddChild(CreateSectionHeader("Tier 2 upgrades"));
@@ -248,11 +240,6 @@ internal class PermaProg : SimpleModConfig {
 
   public void UpgradeButtonBlockGain() {
     if (IsLevelUpSuccessful(Upgrades.BlockGain)) BlockGainLevel++;
-    UpdateUi();
-  }
-
-  private void Currency5000() {
-    CurrencyAvailable += 5000;
     UpdateUi();
   }
   //END OF BUTTONS//////////////////////////////////////////////////////////////////////////////////////////////////////
