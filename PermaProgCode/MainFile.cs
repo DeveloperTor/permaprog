@@ -423,7 +423,7 @@ public class UpgDataContainer {
 [HarmonyPatch]
 public static class SetStartingHp {
   private static void SetHp(ref int __result) {
-    if (PermaProg.BalancingEnabled) __result -= 20;
+    if (PermaProg.BalancingEnabled) __result = (int)(__result * 0.8);
     __result += (int)PermaProg.MaxHealthValue;
   }
 
