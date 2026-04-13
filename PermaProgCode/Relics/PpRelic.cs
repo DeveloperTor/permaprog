@@ -10,8 +10,10 @@ using BaseLib.Extensions;
 using BaseLib.Abstracts;
 using BaseLib.Utils;
 using Godot;
-//using MegaCrit.Sts2.Core.Models.Powers;
-//using MegaCrit.Sts2.Core.Rooms;
+#if DEBUG
+using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.Rooms;
+#endif
 
 namespace PermaProg.PermaProgCode.Relics;
 
@@ -24,12 +26,13 @@ public sealed class PpRelic : CustomRelicModel {
 
   protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(1M, ValueProp.Unpowered)];
 
-  // Uncomment for debug
-  // public override async Task AfterRoomEntered(AbstractRoom room) {
-  //   if (room is not CombatRoom) return;
-  //   Flash();
-  //   await PowerCmd.Apply<StrengthPower>(Owner.Creature, 999M, Owner.Creature, null);
-  // }
+#if DEBUG
+  public override async Task AfterRoomEntered(AbstractRoom room) {
+    if (room is not CombatRoom) return;
+    Flash();
+    await PowerCmd.Apply<StrengthPower>(Owner.Creature, 999M, Owner.Creature, null);
+  }
+#endif
 
   public override Task BeforeTurnEndVeryEarly(PlayerChoiceContext choiceContext, CombatSide side) {
     if (side != Owner.Creature.Side)
@@ -42,9 +45,9 @@ public sealed class PpRelic : CustomRelicModel {
     if (!ShouldTrigger)
       return;
     ShouldTrigger = false;
-    if (PermaProg.BlockGainValue > 0) {
+    if (PP.BlockGainValue > 0) {
       Flash();
-      var blockAmount = new BlockVar((decimal)PermaProg.BlockGainValue, ValueProp.Unpowered);
+      var blockAmount = new BlockVar((decimal)PP.BlockGainValue, ValueProp.Unpowered);
       await CreatureCmd.GainBlock(Owner.Creature, blockAmount, null);
     }
   }

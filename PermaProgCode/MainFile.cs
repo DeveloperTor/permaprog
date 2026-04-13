@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Achievements;
 using PermaProg.PermaProgCode.Relics;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Models;
@@ -17,16 +18,18 @@ using Godot;
 
 namespace PermaProg.PermaProgCode;
 
+// MF: MainFile
+// ReSharper disable once ClassNeverInstantiated.Global
 [ModInitializer(nameof(Initialize))]
-public partial class MainFile : Node {
+public partial class MF : Node {
   public const string ModId = "PermaProg"; //Used for resource filepath
   public const string ResPath = $"res://{ModId}";
 
-  public static MegaCrit.Sts2.Core.Logging.Logger Logger { get; } =
-    new(ModId, MegaCrit.Sts2.Core.Logging.LogType.Generic);
+  public static MegaCrit.Sts2.Core.Logging.Logger Log { get; } =
+    new(ModId, LogType.Generic);
 
   public static void Initialize() {
-    ModConfigRegistry.Register(ModId, new PermaProg());
+    ModConfigRegistry.Register(ModId, new PP());
     Harmony harmony = new(ModId);
     harmony.PatchAll();
   }
@@ -37,16 +40,19 @@ public static class PermaProgPatches {
   [HarmonyPatch(typeof(Player), "PopulateStartingDeck")]
   [HarmonyPostfix]
   public static void UpgradeCards(Player __instance) {
+    MF.Log.Info("Starting new run");
+
     var cards = __instance.Deck.Cards;
-    var cardsToUpgrade = RandomlySelectedCards(cards, (int)PermaProg.CardUpgradesValue, cards.Count);
-    foreach (var card in cardsToUpgrade) {
-      if (!card.IsUpgradable) continue;
+    var cardsToUpgrade = RandomlySelectedCards(cards, (int)PP.CardUpgradesValue, cards.Count);
+    var cardModels = cardsToUpgrade.ToList();
+    MF.Log.Info($"Upgrading {cardModels.Count} cards");
+    foreach (var card in cardModels.Where(card => card.IsUpgradable)) {
       card.UpgradeInternal();
       card.FinalizeUpgradeInternal();
     }
 
-    PermaProg.TotalCurrencyGainedDuringRun = 0.0;
-    ModConfig.SaveDebounced<PermaProg>();
+    PP.TotalCurrencyGainedDuringRun = 0;
+    ModConfig.SaveDebounced<PP>();
   }
 
   // Ty Matthew Watson on StackOverflow
@@ -70,6 +76,8 @@ public static class PermaProgPatches {
   [HarmonyPatch(typeof(Player), "PopulateStartingRelics")]
   [HarmonyPostfix]
   public static void AddPpRelic(Player __instance) {
+    MF.Log.Info("Add Peapod relic");
+
     var ppRelic = ModelDb.Relic<PpRelic>().ToMutable();
     ppRelic.FloorAddedToDeck = 1;
     __instance.AddRelicInternal(ppRelic, silent: true);
@@ -78,47 +86,58 @@ public static class PermaProgPatches {
   [HarmonyPatch(typeof(GoldReward), MethodType.Constructor, [typeof(int), typeof(int), typeof(Player), typeof(bool)])]
   [HarmonyPrefix]
   public static void IncreaseGoldRewardDuringRun(ref int min, ref int max, Player player) {
-    var balancingMultiplier = PermaProg.BalancingEnabled ? 0.8 : 1.0;
-    min = (int)Math.Round(min * balancingMultiplier * (1 + PermaProg.GoldGainValue / 100));
-    max = (int)Math.Round(max * balancingMultiplier * (1 + PermaProg.GoldGainValue / 100));
+    var balancingMultiplier = PP.BalancingEnabled ? 0.8 : 1.0;
+    min = (int)Math.Round(min * balancingMultiplier * (1 + PP.GoldGainValue / 100));
+    max = (int)Math.Round(max * balancingMultiplier * (1 + PP.GoldGainValue / 100));
   }
 
   [HarmonyPatch(typeof(PlayerCmd), "GainGold")]
   [HarmonyPrefix]
-  public static void IncreaseCurrencyGained(decimal amount, Player player, bool wasStolenBack) {
-    PermaProg.TotalCurrencyGainedDuringRun += (double)amount * (1 + PermaProg.CurrencyGainValue / 100);
-    ModConfig.SaveDebounced<PermaProg>();
+  public static void GainCurrencyDuringRun(decimal amount, Player player, bool wasStolenBack) {
+    var currencyGained = (double)amount * (1 + PP.CurrencyGainValue / 100);
+    MF.Log.Info(
+      $"Currency gained: {(int)currencyGained} from {amount} gold with multiplier {1 + PP.CurrencyGainValue / 100}.");
+    PP.TotalCurrencyGainedDuringRun += (int)currencyGained;
+    MF.Log.Info($"Total currency gained during run: {PP.TotalCurrencyGainedDuringRun}.");
+    ModConfig.SaveDebounced<PP>();
   }
 
   [HarmonyPatch(typeof(NGameOverScreen), "AddBadge")]
   [HarmonyPrefix]
   public static void UpdateBadgeInfo(string locEntryKey, string? locAmountKey, ref int amount, string? iconPath) {
     if (locEntryKey != "BADGE.goldGained") return;
-    amount = (int)PermaProg.TotalCurrencyGainedDuringRun;
+    MF.Log.Info($"Exchange end-of-run gold ({amount}) to currency gained ({PP.TotalCurrencyGainedDuringRun})");
+    amount = PP.TotalCurrencyGainedDuringRun;
   }
 
   [HarmonyPatch(typeof(NBadge), "Create")]
   [HarmonyPrefix]
   public static void CreateBadge(ref string label, Texture2D? icon) {
-    if (label.Contains("Gold")) label = label.Replace("Gold", "Currency");
+    if (!label.Contains("Gold")) return;
+    MF.Log.Info("Exchange end-of-run 'Gold gained' reward badge to 'Currency Gained'");
+    label = label.Replace("Gold", "Currency");
   }
 
   [HarmonyPatch(typeof(AchievementsHelper), "AfterRunEnded")]
   [HarmonyPrefix]
   public static void SaveDataAtEndOfRun(RunState state, Player player, bool isVictory) {
     if (state.CurrentActIndex >= 2) {
-      PermaProg.CurrencyAvailable = (int)(PermaProg.CurrencyAvailable * (1 + PermaProg.CurrencyInterestValue / 100));
+      var interest = (int)(PP.CurrencyAvailable * (1 + PP.CurrencyInterestValue / 100) - PP.CurrencyAvailable);
+      MF.Log.Info($"Gain {interest} in interest");
+      PP.CurrencyAvailable += interest;
     }
 
-    PermaProg.CurrencyAvailable += (int)PermaProg.TotalCurrencyGainedDuringRun;
-    ModConfig.SaveDebounced<PermaProg>();
+    MF.Log.Info($"Add {PP.TotalCurrencyGainedDuringRun} to available currency");
+    PP.CurrencyAvailable += PP.TotalCurrencyGainedDuringRun;
+    ModConfig.SaveDebounced<PP>();
   }
 }
 
-internal class PermaProg : SimpleModConfig {
+// PP: PermaProg
+internal class PP : SimpleModConfig {
   private static Control? _optionContainer;
   [ConfigIgnore] public static UpgDataContainer Upgrades { get; } = new();
-  [ConfigHideInUI] public static double TotalCurrencyGainedDuringRun { get; set; }
+  [ConfigHideInUI] public static int TotalCurrencyGainedDuringRun { get; set; }
   [ConfigHideInUI] public static int CurrencyAvailable { get; set; }
   public static string CurrencyText { get; set; } = "0";
   public static string CurrencyGainedLastRunText { get; set; } = "0";
@@ -126,23 +145,18 @@ internal class PermaProg : SimpleModConfig {
 
   //UI GENERATION///////////////////////////////////////////////////////////////////////////////////////////////////////
   public override void SetupConfigUI(Control optionContainer) {
+    MF.Log.Info("Shop menu entered");
     _optionContainer = optionContainer;
-    //AddRestoreDefaultsButton(_optionContainer); // Uncomment for debug
+
+#if DEBUG
+    AddRestoreDefaultsButton(_optionContainer);
+    _optionContainer.AddChild(CreateButton("Add gold (debug)", "+5000", AddGold5000));
+    _optionContainer.AddChild(CreateDividerControl());
+#endif
 
     _optionContainer.AddChild(CreateToggleOption(GetPropertyInfo(nameof(BalancingEnabled))));
-
-    var totalCurrencyGainedDuringRunTmp = (int)TotalCurrencyGainedDuringRun;
-    CurrencyGainedLastRunText = totalCurrencyGainedDuringRunTmp.ToString();
-    var propertyInfo = GetPropertyInfo(nameof(CurrencyGainedLastRunText));
-    var headerRow = CreateLineEditOption(propertyInfo);
-    if (headerRow.SettingControl is NConfigLineEdit header) {
-      header.AddThemeFontSizeOverride("font_size", 20);
-      header.Editable = false;
-      _optionContainer.AddChild(headerRow);
-    }
-
-
-    CreateCurrencyHeader();
+    CreateLineEdit(nameof(CurrencyGainedLastRunText), 20);
+    CreateLineEdit(nameof(CurrencyText), 50);
     _optionContainer.AddChild(CreateDividerControl());
 
     _optionContainer.AddChild(CreateSectionHeader("Tier 1 upgrades"));
@@ -259,12 +273,18 @@ internal class PermaProg : SimpleModConfig {
     if (IsLevelUpSuccessful(Upgrades.BlockGain)) BlockGainLevel++;
     UpdateUi();
   }
+
+#if DEBUG
+  public static void AddGold5000() {
+    CurrencyAvailable += 5000;
+  }
+#endif
   //END OF BUTTONS//////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //HELPER FUNCTIONS////////////////////////////////////////////////////////////////////////////////////////////////////
   private void UpdateUi() {
     UpdateCurrentValues();
-    UpdateCurrencyHeader();
+    UpdateLineEdits();
     UpdateSliders();
     UpdateButtons();
   }
@@ -281,10 +301,14 @@ internal class PermaProg : SimpleModConfig {
     Upgrades.TotalCurrentLevels = totalCurrentLevels;
   }
 
-  private static void UpdateCurrencyHeader() {
-    var headerRow = _optionContainer?.GetNode<NConfigOptionRow>("CurrencyText");
-    if (headerRow?.SettingControl is NConfigLineEdit header) header.Text = CurrencyAvailable.ToString();
+  private static void UpdateLineEdits() {
     CurrencyText = CurrencyAvailable.ToString();
+    var headerRow = _optionContainer?.GetNode<NConfigOptionRow>("CurrencyText");
+    if (headerRow?.SettingControl is NConfigLineEdit header) header.Text = CurrencyText;
+
+    CurrencyGainedLastRunText = TotalCurrencyGainedDuringRun.ToString();
+    var headerRow2 = _optionContainer?.GetNode<NConfigOptionRow>("CurrencyGainedLastRunText");
+    if (headerRow2?.SettingControl is NConfigLineEdit header2) header2.Text = CurrencyGainedLastRunText;
   }
 
   private static void UpdateSliders() {
@@ -331,12 +355,12 @@ internal class PermaProg : SimpleModConfig {
     return true;
   }
 
-  private void CreateCurrencyHeader() {
-    var propertyInfo = GetPropertyInfo(nameof(CurrencyText));
+  private void CreateLineEdit(string name, int fontSize, bool isEditable = false) {
+    var propertyInfo = GetPropertyInfo(name);
     var headerRow = CreateLineEditOption(propertyInfo);
     if (headerRow.SettingControl is NConfigLineEdit header) {
-      header.AddThemeFontSizeOverride("font_size", 50);
-      header.Editable = false;
+      header.AddThemeFontSizeOverride("font_size", fontSize);
+      header.Editable = isEditable;
     }
 
     _optionContainer?.AddChild(headerRow);
@@ -457,8 +481,8 @@ public class UpgDataContainer {
 [HarmonyPatch]
 public static class SetStartingHp {
   private static void SetHp(ref int __result) {
-    if (PermaProg.BalancingEnabled) __result = (int)(__result * 0.8);
-    __result += (int)PermaProg.MaxHealthValue;
+    if (PP.BalancingEnabled) __result = (int)(__result * 0.8);
+    __result += (int)PP.MaxHealthValue;
   }
 
   [HarmonyPatch(typeof(Ironclad), "StartingHp", MethodType.Getter)]
@@ -495,8 +519,8 @@ public static class SetStartingHp {
 [HarmonyPatch]
 public static class SetStartingGold {
   private static void SetGold(ref int __result) {
-    if (PermaProg.BalancingEnabled) __result = 0;
-    __result += (int)PermaProg.StartGoldValue;
+    if (PP.BalancingEnabled) __result = 0;
+    __result += (int)PP.StartGoldValue;
   }
 
   [HarmonyPatch(typeof(Ironclad), "StartingGold", MethodType.Getter)]
