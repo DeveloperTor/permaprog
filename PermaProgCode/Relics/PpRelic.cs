@@ -57,7 +57,7 @@ public sealed class PpRelic : CustomRelicModel
     }
 
     public override Task BeforeSideTurnStart(PlayerChoiceContext choiceContext, CombatSide side,
-      CombatState combatState)
+        CombatState combatState)
     {
         ShouldTrigger = false;
         return Task.CompletedTask;

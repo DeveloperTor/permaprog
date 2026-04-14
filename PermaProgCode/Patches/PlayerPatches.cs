@@ -1,20 +1,9 @@
-using Godot;
-using HarmonyLib;
-using BaseLib.Config;
-using MegaCrit.Sts2.Core.Nodes.Screens.GameOverScreen;
-using MegaCrit.Sts2.Core.Models.Characters;
 using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Achievements;
-using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Logging;
-using MegaCrit.Sts2.Core.Modding;
-using MegaCrit.Sts2.Core.Rewards;
-using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Rooms;
-using MegaCrit.Sts2.Core.Saves;
-using MegaCrit.Sts2.Core.Runs;
 using PermaProg.PermaProgCode.Relics;
-using PermaProg.PermaProgCode.Extensions;
+using MegaCrit.Sts2.Core.Models;
+using BaseLib.Config;
+using HarmonyLib;
+
 namespace PermaProg.PermaProgCode.Patches;
 
 [HarmonyPatch]

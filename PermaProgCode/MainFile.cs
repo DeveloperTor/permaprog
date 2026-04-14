@@ -1,10 +1,10 @@
-using System.Reflection;
 using Logger = MegaCrit.Sts2.Core.Logging.Logger;
-using Godot;
-using HarmonyLib;
 using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Logging;
+using System.Reflection;
 using BaseLib.Config;
+using HarmonyLib;
+using Godot;
 
 namespace PermaProg.PermaProgCode;
 

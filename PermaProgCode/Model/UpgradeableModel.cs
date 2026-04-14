@@ -1,5 +1,6 @@
-namespace PermaProg.PermaProgCode.Model;
 using Godot.Collections;
+
+namespace PermaProg.PermaProgCode.Model;
 
 public class UpgradeableModel
 {

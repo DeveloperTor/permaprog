@@ -76,7 +76,7 @@ public class UpgradeableData
 
         MF.Log.Info("Running sanity checks");
         foreach (var upg in All.Keys.Where(upg =>
-                   upg.Vals.Count != upg.MaxLevel + 1 || upg.UpgCosts.Count != upg.MaxLevel))
+                     upg.Vals.Count != upg.MaxLevel + 1 || upg.UpgCosts.Count != upg.MaxLevel))
         {
             MF.Log.Info($"This one is invalid -> {upg.CurrentLevelName}");
             MF.Log.Info($"MaxLevel: {upg.MaxLevel} Vals: {upg.Vals.Count} UpgCosts: {upg.UpgCosts.Count}");

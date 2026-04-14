@@ -1,6 +1,6 @@
+using MegaCrit.Sts2.Core.Models;
 using System.Reflection;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Models;
 
 namespace PermaProg.PermaProgCode.Patches;
 
@@ -15,7 +15,7 @@ public static class SetStartingGold
         __result += (int)PP.StartGoldValue;
     }
 
-    static MethodBase[] TargetMethods()
+    public static MethodInfo?[] TargetMethods()
     {
         var baseType = typeof(CharacterModel);
 
@@ -23,7 +23,7 @@ public static class SetStartingGold
             .SelectMany(a =>
             {
                 try { return a.GetTypes(); }
-                catch { return Array.Empty<Type>(); }
+                catch { return []; }
             })
             .Where(t => baseType.IsAssignableFrom(t) && !t.IsAbstract)
             .Select(t => t.GetProperty("StartingGold")?.GetGetMethod(true))
@@ -31,7 +31,7 @@ public static class SetStartingGold
             .ToArray();
     }
 
-    static void Postfix(ref int __result)
+    public static void Postfix(ref int __result)
     {
         SetGold(ref __result);
     }

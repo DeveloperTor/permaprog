@@ -1,20 +1,15 @@
-using Godot;
-using HarmonyLib;
-using BaseLib.Config;
 using MegaCrit.Sts2.Core.Nodes.Screens.GameOverScreen;
-using MegaCrit.Sts2.Core.Models.Characters;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Achievements;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Logging;
-using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Rewards;
-using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves;
-using MegaCrit.Sts2.Core.Runs; 
-using PermaProg.PermaProgCode.Relics;
-using PermaProg.PermaProgCode.Extensions;
+using MegaCrit.Sts2.Core.Runs;
+using BaseLib.Config;
+using HarmonyLib;
+using Godot;
+
 namespace PermaProg.PermaProgCode.Patches;
 
 [HarmonyPatch]
@@ -34,8 +29,8 @@ public static class PermaProgPatches
     public static void GainCurrencyDuringRun(decimal amount, Player player, bool wasStolenBack)
     {
         var currencyGained = (double)amount * (1 + PP.CurrencyGainValue / 100);
-        MF.Log.Info(
-          $"Currency to gain: {(int)currencyGained} from {amount} gold with multiplier {1 + PP.CurrencyGainValue / 100}.");
+        MF.Log.Info($"Currency to gain: {(int)currencyGained} from {amount} gold " +
+                    $"with multiplier {1 + PP.CurrencyGainValue / 100}.");
         PP.CurrencyToGain = (int)currencyGained;
     }
 

@@ -1,14 +1,21 @@
+using MegaCrit.Sts2.Core.Models;
 using System.Reflection;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Models;
 
 namespace PermaProg.PermaProgCode.Patches;
 
 [HarmonyPatch]
 public static class SetStartingHpPatch
 {
+    private static void SetHp(ref int __result)
+    {
+        if (PP.BalancingEnabled)
+            __result = (int)(__result * 0.8);
 
-    static MethodBase[] TargetMethods()
+        __result += (int)PP.MaxHealthValue;
+    }
+
+    public static MethodInfo?[] TargetMethods()
     {
         var baseType = typeof(CharacterModel);
 
@@ -16,7 +23,7 @@ public static class SetStartingHpPatch
             .SelectMany(a =>
             {
                 try { return a.GetTypes(); }
-                catch { return Array.Empty<Type>(); }
+                catch { return []; }
             })
             .Where(t => baseType.IsAssignableFrom(t) && !t.IsAbstract)
             .Select(t => t.GetProperty("StartingHp")?.GetGetMethod(true))
@@ -24,9 +31,8 @@ public static class SetStartingHpPatch
             .ToArray();
     }
 
-    private static void SetHp(ref int __result)
+    public static void Postfix(ref int __result)
     {
-        if (PP.BalancingEnabled) __result = (int)(__result * 0.8);
-        __result += (int)PP.MaxHealthValue;
+        SetHp(ref __result);
     }
 }

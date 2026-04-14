@@ -1,10 +1,10 @@
-using System.Reflection;
-using Godot;
-using Godot.Collections;
-using BaseLib.Config;
-using BaseLib.Config.UI;
 using PermaProg.PermaProgCode.Model;
 using PermaProg.PermaProgCode.Data;
+using System.Reflection;
+using Godot.Collections;
+using BaseLib.Config.UI;
+using BaseLib.Config;
+using Godot;
 
 namespace PermaProg.PermaProgCode;
 
@@ -103,6 +103,7 @@ internal class PP : SimpleModConfig
                 break;
         }
     }
+
     public static int StartGoldLevel { get; set; }
     [SliderRange(0.0, 1000.0)] public static double StartGoldValue { get; set; }
 
@@ -123,6 +124,7 @@ internal class PP : SimpleModConfig
 
     public static int BlockGainLevel { get; set; }
     [SliderRange(0.0, 1000.0)] public static double BlockGainValue { get; set; }
+
     public void UpgradeButtonStartGold()
     {
         if (IsLevelUpSuccessful(Upgrades.StartGold)) StartGoldLevel++;
@@ -242,7 +244,7 @@ internal class PP : SimpleModConfig
 
             IsArraySafe(upg, upg.UpgCosts);
             (button.GetChild(1) as Label)!.Text =
-              upg.UpgCosts[upg.CurrentLevel] <= 0 ? "Free!" : upg.UpgCosts[upg.CurrentLevel].ToString();
+                upg.UpgCosts[upg.CurrentLevel] <= 0 ? "Free!" : upg.UpgCosts[upg.CurrentLevel].ToString();
         }
     }
 
