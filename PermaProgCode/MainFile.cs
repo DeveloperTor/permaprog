@@ -391,9 +391,9 @@ internal class PP : SimpleModConfig {
 
   private bool IsArraySafe(Upgradeable upg, Array<int> upgArray) {
     if (upg.CurrentLevel <= upgArray.Count - 1 || upg.CurrentLevel == 0) return true;
-    
+
     MF.Log.Error($"{upg.CurrentLevelName}: Current level ({upg.CurrentLevel}) is higher than values " +
-                $"available ({upgArray.Count - 1}). Lowering value to max level available. Bugs may occur");
+                 $"available ({upgArray.Count - 1}). Lowering value to max level available. Bugs may occur");
     upg.CurrentLevel = upgArray.Count - 1;
     GetPropertyInfo(upg.CurrentLevelName).SetValue(Upgrades, upg.CurrentLevel);
     return false;
