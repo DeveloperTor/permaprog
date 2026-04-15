@@ -113,33 +113,41 @@ internal class PP : SimpleModConfig
     }
 
     // Tickboxes
-    public static int CommonRelicLevel { get; set; }
     public static bool CommonRelicValue { get; set; }
+    public static int CommonRelicLevel { get; set; }
 
     // Sliders
+    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0} gold")]
+    public static double StartGoldValue { get; set; }
     public static int StartGoldLevel { get; set; }
-    [SliderRange(0.0, 1000.0)] public static double StartGoldValue { get; set; }
 
+    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0}%")]
+    public static double CurrencyGainValue { get; set; }
     public static int CurrencyGainLevel { get; set; }
-    [SliderRange(0.0, 1000.0)] public static double CurrencyGainValue { get; set; }
 
+    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0} hp")]
+    public static double MaxHealthValue { get; set; }
     public static int MaxHealthLevel { get; set; }
-    [SliderRange(0.0, 1000.0)] public static double MaxHealthValue { get; set; }
 
+    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0} card(s)")]
+    public static double CardUpgradesValue { get; set; }
     public static int CardUpgradesLevel { get; set; }
-    [SliderRange(0.0, 1000.0)] public static double CardUpgradesValue { get; set; }
 
+    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0}%")]
+    public static double CurrencyInterestValue { get; set; }
     public static int CurrencyInterestLevel { get; set; }
-    [SliderRange(0.0, 1000.0)] public static double CurrencyInterestValue { get; set; }
 
+    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0}%")]
+    public static double GoldGainValue { get; set; }
     public static int GoldGainLevel { get; set; }
-    [SliderRange(0.0, 1000.0)] public static double GoldGainValue { get; set; }
 
+    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0} block")]
+    public static double BlockGainValue { get; set; }
     public static int BlockGainLevel { get; set; }
-    [SliderRange(0.0, 1000.0)] public static double BlockGainValue { get; set; }
 
+    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0}%")]
+    public static double CardRarityValue { get; set; }
     public static int CardRarityLevel { get; set; }
-    [SliderRange(0.0, 1000.0)] public static double CardRarityValue { get; set; }
 
     // Buttons
     public void UpgradeButtonStartGold()
