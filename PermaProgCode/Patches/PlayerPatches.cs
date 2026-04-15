@@ -1,4 +1,6 @@
+using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Entities.Relics;
 using PermaProg.PermaProgCode.Relics;
 using MegaCrit.Sts2.Core.Models;
 using BaseLib.Config;
@@ -58,12 +60,21 @@ public static class PlayerPatches
 
     [HarmonyPatch(typeof(Player), "PopulateStartingRelics")]
     [HarmonyPostfix]
-    public static void AddPpRelic(Player __instance)
+    public static void AddRelics(Player __instance)
     {
         MF.Log.Info("Adding Peapod relic");
 
         var ppRelic = ModelDb.Relic<PpRelic>().ToMutable();
         ppRelic.FloorAddedToDeck = 1;
         __instance.AddRelicInternal(ppRelic, silent: true);
+
+        if (!PP.CommonRelicValue) return;
+
+        var allCommonRelics = ModelDb.RelicPool<SharedRelicPool>().GetUnlockedRelics(__instance.UnlockState)
+            .Where(relic => relic.Rarity == RelicRarity.Common).ToList();
+        var randomRelicToAdd = allCommonRelics[new Random().Next(allCommonRelics.Count)].ToMutable();
+        MF.Log.Info($"Adding random common relic ({randomRelicToAdd})");
+        randomRelicToAdd.FloorAddedToDeck = 1;
+        __instance.AddRelicInternal(randomRelicToAdd, silent: true);
     }
 }

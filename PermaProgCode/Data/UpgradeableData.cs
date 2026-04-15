@@ -7,29 +7,31 @@ public class UpgradeableData
     public int TotalCurrentLevels;
 
     public readonly Dictionary<UpgradeableModel, string> All = new();
-    public readonly UpgradeableModel StartGold = new();
-    public readonly UpgradeableModel CurrencyGain = new();
-    public readonly UpgradeableModel MaxHealth = new();
-    public readonly UpgradeableModel CardUpgrades = new();
     public readonly UpgradeableModel CurrencyInterest = new();
-    public readonly UpgradeableModel GoldGain = new();
-    public readonly UpgradeableModel BlockGain = new();
+    public readonly UpgradeableModel CardUpgrades = new();
+    public readonly UpgradeableModel CurrencyGain = new();
+    public readonly UpgradeableModel CommonRelic = new();
     public readonly UpgradeableModel CardRarity = new();
+    public readonly UpgradeableModel BlockGain = new();
+    public readonly UpgradeableModel MaxHealth = new();
+    public readonly UpgradeableModel StartGold = new();
+    public readonly UpgradeableModel GoldGain = new();
 
     public UpgradeableData()
     {
-        All.Add(StartGold, nameof(StartGold));
-        All.Add(CurrencyGain, nameof(CurrencyGain));
-        All.Add(MaxHealth, nameof(MaxHealth));
-        All.Add(CardUpgrades, nameof(CardUpgrades));
         All.Add(CurrencyInterest, nameof(CurrencyInterest));
-        All.Add(GoldGain, nameof(GoldGain));
-        All.Add(BlockGain, nameof(BlockGain));
+        All.Add(CardUpgrades, nameof(CardUpgrades));
+        All.Add(CurrencyGain, nameof(CurrencyGain));
+        All.Add(CommonRelic, nameof(CommonRelic));
         All.Add(CardRarity, nameof(CardRarity));
+        All.Add(BlockGain, nameof(BlockGain));
+        All.Add(MaxHealth, nameof(MaxHealth));
+        All.Add(StartGold, nameof(StartGold));
+        All.Add(GoldGain, nameof(GoldGain));
 
         foreach (var upg in All)
         {
-            upg.Key.SliderName = upg.Value + "Value";
+            upg.Key.ValueName = upg.Value + "Value";
             upg.Key.ButtonName = "UpgradeButton" + upg.Value;
             upg.Key.CurrentLevelName = upg.Value + "Level";
         }
@@ -80,6 +82,12 @@ public class UpgradeableData
             CardRarity.MaxLevel = 5;
             CardRarity.Vals = [0, 20, 40, 60, 80, 100];
             CardRarity.UpgCosts = [5000, 10000, 15000, 20000, 25000];
+        }
+
+        {
+            CommonRelic.MaxLevel = 1;
+            CommonRelic.Vals = [0, 1];
+            CommonRelic.UpgCosts = [10000];
         }
 
         MF.Log.Info("Running sanity checks");

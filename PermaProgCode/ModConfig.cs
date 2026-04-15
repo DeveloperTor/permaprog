@@ -55,9 +55,11 @@ internal class PP : SimpleModConfig
             optionContainer.AddChild(CreateSectionHeader("???"));
 #if DEBUG
             Upgrades.CurrencyInterest.Unlocked = false;
-            Upgrades.GoldGain.Unlocked = false;
             Upgrades.CardUpgrades.Unlocked = false;
+            Upgrades.CommonRelic.Unlocked = false;
+            Upgrades.CardRarity.Unlocked = false;
             Upgrades.BlockGain.Unlocked = false;
+            Upgrades.GoldGain.Unlocked = false;
 #endif
         }
         else
@@ -83,6 +85,7 @@ internal class PP : SimpleModConfig
                 optionContainer.AddChild(CreateSectionHeader("Tier 3 upgrades"));
                 CreateUpgradeableUi(Upgrades.BlockGain, UpgradeButtonBlockGain);
                 CreateUpgradeableUi(Upgrades.CardRarity, UpgradeButtonCardRarity, true);
+                CreateUpgradeableUi(Upgrades.CommonRelic, UpgradeButtonCommonRelic, false, true);
                 break;
         }
     }
@@ -105,6 +108,11 @@ internal class PP : SimpleModConfig
         }
     }
 
+    // Tickboxes
+    public static int CommonRelicLevel { get; set; }
+    public static bool CommonRelicValue { get; set; }
+
+    // Sliders
     public static int StartGoldLevel { get; set; }
     [SliderRange(0.0, 1000.0)] public static double StartGoldValue { get; set; }
 
@@ -129,6 +137,7 @@ internal class PP : SimpleModConfig
     public static int CardRarityLevel { get; set; }
     [SliderRange(0.0, 1000.0)] public static double CardRarityValue { get; set; }
 
+    // Buttons
     public void UpgradeButtonStartGold()
     {
         if (IsLevelUpSuccessful(Upgrades.StartGold)) StartGoldLevel++;
@@ -171,8 +180,15 @@ internal class PP : SimpleModConfig
         UpdateUi();
     }
 
-    public void UpgradeButtonCardRarity() {
+    public void UpgradeButtonCardRarity()
+    {
         if (IsLevelUpSuccessful(Upgrades.CardRarity)) CardRarityLevel++;
+        UpdateUi();
+    }
+
+    public void UpgradeButtonCommonRelic()
+    {
+        if (IsLevelUpSuccessful(Upgrades.CommonRelic)) CommonRelicLevel++;
         UpdateUi();
     }
 
@@ -184,20 +200,25 @@ internal class PP : SimpleModConfig
     }
 #endif
 
+    // Helpers
     private void UpdateUi()
     {
         UpdateCurrentValues();
         UpdateLineEdits();
-        UpdateSliders();
-        UpdateButtons();
+
+        foreach (var upg in Upgrades.All.Keys.Where(upg => upg.Unlocked))
+        {
+            UpdateSliders(upg);
+            UpdateTickboxes(upg);
+            UpdateButtons(upg);
+        }
     }
 
     private void UpdateCurrentValues()
     {
         var totalCurrentLevels = 0;
-        foreach (var upg in Upgrades.All.Keys)
+        foreach (var upg in Upgrades.All.Keys.Where(upg => upg.Unlocked))
         {
-            if (!upg.Unlocked) continue;
             var propertyInfo = GetPropertyInfo(upg.CurrentLevelName);
             upg.CurrentLevel = (int)(propertyInfo.GetValue(Upgrades) ?? throw new InvalidOperationException());
             totalCurrentLevels += upg.CurrentLevel;
@@ -216,46 +237,45 @@ internal class PP : SimpleModConfig
         if (headerRow2?.SettingControl is NConfigLineEdit header2) header2.Text = CurrencyGainedLastRunText;
     }
 
-    private void UpdateSliders()
+    private void UpdateSliders(UpgradeableModel upg)
     {
-        foreach (var upg in Upgrades.All.Keys)
-        {
-            if (!upg.Unlocked) continue;
-            var sliderRow = _optionContainer?.GetNode<NConfigOptionRow>(upg.SliderName);
-            if (sliderRow?.SettingControl is not NConfigSlider slider) return;
+        var sliderRow = _optionContainer?.GetNode<NConfigOptionRow>(upg.ValueName);
+        if (sliderRow?.SettingControl is not NConfigSlider slider) return;
 
-            IsArraySafe(upg, upg.Vals);
-            var maxSliderValue = upg.Vals[upg.CurrentLevel];
-            if (maxSliderValue <= 0)
-            {
-                slider.Visible = false;
-            }
-            else
-            {
-                slider.SetRange(0.0, maxSliderValue);
-                slider.Visible = true;
-            }
+        IsArraySafe(upg, upg.Vals);
+        var maxSliderValue = upg.Vals[upg.CurrentLevel];
+        if (maxSliderValue <= 0)
+        {
+            slider.Visible = false;
+        }
+        else
+        {
+            slider.SetRange(0.0, maxSliderValue);
+            slider.Visible = true;
         }
     }
 
-    private void UpdateButtons()
+    private static void UpdateTickboxes(UpgradeableModel upg)
     {
-        foreach (var upg in Upgrades.All.Keys)
+        var tickboxRow = _optionContainer?.GetNode<NConfigOptionRow>(upg.ValueName);
+        if (tickboxRow?.SettingControl is not NConfigTickbox tickbox) return;
+        tickbox.Visible = upg.CurrentLevel >= upg.MaxLevel;
+    }
+
+    private void UpdateButtons(UpgradeableModel upg)
+    {
+        var buttonRow = _optionContainer?.GetNode<NConfigOptionRow>(upg.ButtonName);
+        if (buttonRow?.SettingControl is not NConfigButton button) return;
+
+        if (upg.CurrentLevel >= upg.MaxLevel)
         {
-            if (!upg.Unlocked) continue;
-            var buttonRow = _optionContainer?.GetNode<NConfigOptionRow>(upg.ButtonName);
-            if (buttonRow?.SettingControl is not NConfigButton button) return;
-
-            if (upg.CurrentLevel >= upg.MaxLevel)
-            {
-                (button.GetChild(1) as Label)!.Text = "Maxed out!";
-                continue;
-            }
-
-            IsArraySafe(upg, upg.UpgCosts);
-            (button.GetChild(1) as Label)!.Text =
-                upg.UpgCosts[upg.CurrentLevel] <= 0 ? "Free!" : upg.UpgCosts[upg.CurrentLevel].ToString();
+            (button.GetChild(1) as Label)!.Text = "Maxed out!";
+            return;
         }
+
+        IsArraySafe(upg, upg.UpgCosts);
+        (button.GetChild(1) as Label)!.Text =
+            upg.UpgCosts[upg.CurrentLevel] <= 0 ? "Free!" : upg.UpgCosts[upg.CurrentLevel].ToString();
     }
 
     private bool IsLevelUpSuccessful(UpgradeableModel upg)
@@ -266,6 +286,7 @@ internal class PP : SimpleModConfig
 
         CurrencyAvailable -= upg.UpgCosts[upg.CurrentLevel];
         upg.CurrentLevel++;
+        MF.Log.Info($"Upgraded {upg.ValueName[..^"Value".Length]} to level {upg.CurrentLevel}");
         return true;
     }
 
@@ -282,11 +303,17 @@ internal class PP : SimpleModConfig
         _optionContainer?.AddChild(headerRow);
     }
 
-    private void CreateUpgradeableUi(UpgradeableModel upg, Action onPressed, bool addHoverTip = false)
+    private void CreateUpgradeableUi(UpgradeableModel upg, Action onPressed, bool addHoverTip = false,
+        bool isTickbox = false
+    )
     {
-        var slider = CreateSliderOption(GetPropertyInfo(upg.SliderName));
-        if (addHoverTip) slider.AddHoverTip();
-        _optionContainer?.AddChild(slider);
+        var optionRow = isTickbox
+            ? CreateToggleOption(GetPropertyInfo(upg.ValueName))
+            : CreateSliderOption(GetPropertyInfo(upg.ValueName));
+
+        if (addHoverTip) optionRow.AddHoverTip();
+
+        _optionContainer?.AddChild(optionRow);
         _optionContainer?.AddChild(CreateButton(upg.ButtonName, "Default text", onPressed));
         _optionContainer?.AddChild(CreateDividerControl());
         upg.Unlocked = true;

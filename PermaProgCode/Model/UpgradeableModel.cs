@@ -4,7 +4,7 @@ namespace PermaProg.PermaProgCode.Model;
 
 public class UpgradeableModel
 {
-    public string SliderName = "";
+    public string ValueName = "";
     public string ButtonName = "";
     public string CurrentLevelName = "";
 
