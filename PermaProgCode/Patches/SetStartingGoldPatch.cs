@@ -7,12 +7,13 @@ namespace PermaProg.PermaProgCode.Patches;
 [HarmonyPatch]
 public static class SetStartingGold
 {
-    private static void SetGold(ref int __result)
+    private static void SetGold(CharacterModel __instance, ref int __result)
     {
         if (PP.BalancingEnabled)
             __result = 0;
 
         __result += (int)PP.StartGoldValue;
+        MF.Log.Info($"Setting starting gold of {__instance} to " + __result);
     }
 
     public static MethodInfo?[] TargetMethods()
@@ -31,8 +32,8 @@ public static class SetStartingGold
             .ToArray();
     }
 
-    public static void Postfix(ref int __result)
+    public static void Postfix(CharacterModel __instance, ref int __result)
     {
-        SetGold(ref __result);
+        SetGold(__instance, ref __result);
     }
 }

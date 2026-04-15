@@ -18,8 +18,9 @@ public partial class MF : Node
 
     public static void Initialize()
     {
-        var version = Assembly.GetExecutingAssembly().GetName().Version;
-        Log.Info("Game version: " + version);
+        // Have to update manually each release until I figure out an automatic way to get value from the JSON file
+        var version = Assembly.GetExecutingAssembly().GetName().Version = new Version(0, 5, 1);
+        Log.Info("Mod version: " + version);
         ModConfigRegistry.Register(ModId, new PP());
         new Harmony(ModId).PatchAll();
     }

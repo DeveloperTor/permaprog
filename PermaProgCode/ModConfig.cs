@@ -15,6 +15,7 @@ internal class PP : SimpleModConfig
     [ConfigIgnore] public static int CurrencyToGain { get; set; }
     [ConfigHideInUI] public static int TotalCurrencyGainedDuringRun { get; set; }
     [ConfigHideInUI] public static int CurrencyAvailable { get; set; }
+    public static bool DebugMenuEnabled { get; set; }
     public static string CurrencyText { get; set; } = "0";
     public static string CurrencyGainedLastRunText { get; set; } = "0";
     public static bool BalancingEnabled { get; set; } = true;
@@ -23,12 +24,14 @@ internal class PP : SimpleModConfig
     {
         MF.Log.Info("Shop menu entered");
         _optionContainer = optionContainer;
-
-#if DEBUG
-        AddRestoreDefaultsButton(_optionContainer);
-        _optionContainer.AddChild(CreateButton("Add gold (debug)", "+5000", AddGold5000));
-        _optionContainer.AddChild(CreateDividerControl());
-#endif
+        _optionContainer.AddChild(CreateToggleOption(GetPropertyInfo(nameof(DebugMenuEnabled))));
+        if (DebugMenuEnabled)
+        {
+            MF.Log.Info("Showing debug menu");
+            AddRestoreDefaultsButton(_optionContainer);
+            _optionContainer.AddChild(CreateButton("Add gold (debug)", "+500", AddGold500));
+            _optionContainer.AddChild(CreateDividerControl());
+        }
 
         _optionContainer.AddChild(CreateToggleOption(GetPropertyInfo(nameof(BalancingEnabled))));
         CreateLineEdit(nameof(CurrencyGainedLastRunText), 20);
@@ -53,14 +56,15 @@ internal class PP : SimpleModConfig
         {
             optionContainer.AddChild(CreateSectionHeader("..some beings... ..are yet to... ..be revealed..."));
             optionContainer.AddChild(CreateSectionHeader("???"));
-#if DEBUG
+
+            if (!DebugMenuEnabled) return;
+
             Upgrades.CurrencyInterest.Unlocked = false;
             Upgrades.CardUpgrades.Unlocked = false;
             Upgrades.CommonRelic.Unlocked = false;
             Upgrades.CardRarity.Unlocked = false;
             Upgrades.BlockGain.Unlocked = false;
             Upgrades.GoldGain.Unlocked = false;
-#endif
         }
         else
         {
@@ -192,13 +196,11 @@ internal class PP : SimpleModConfig
         UpdateUi();
     }
 
-#if DEBUG
-    public void AddGold5000()
+    public void AddGold500()
     {
-        CurrencyAvailable += 5000;
+        CurrencyAvailable += 500;
         UpdateUi();
     }
-#endif
 
     // Helpers
     private void UpdateUi()

@@ -7,12 +7,13 @@ namespace PermaProg.PermaProgCode.Patches;
 [HarmonyPatch]
 public static class SetStartingHpPatch
 {
-    private static void SetHp(ref int __result)
+    private static void SetHp(CharacterModel __instance, ref int __result)
     {
         if (PP.BalancingEnabled)
             __result = (int)(__result * 0.8);
 
         __result += (int)PP.MaxHealthValue;
+        MF.Log.Info($"Setting starting HP of {__instance} to " + __result);
     }
 
     public static MethodInfo?[] TargetMethods()
@@ -31,8 +32,8 @@ public static class SetStartingHpPatch
             .ToArray();
     }
 
-    public static void Postfix(ref int __result)
+    public static void Postfix(CharacterModel __instance, ref int __result)
     {
-        SetHp(ref __result);
+        SetHp(__instance, ref __result);
     }
 }
