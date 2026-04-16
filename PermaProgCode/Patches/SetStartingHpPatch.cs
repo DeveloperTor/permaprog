@@ -10,7 +10,7 @@ public static class SetStartingHpPatch
     private static void SetHp(CharacterModel __instance, ref int __result)
     {
         if (PP.BalancingEnabled)
-            __result = (int)(__result * 0.8);
+            __result = (int)(__result * 0.9);
 
         __result += (int)PP.MaxHealthValue;
         MF.Log.Info($"Setting starting HP of {__instance} to " + __result);

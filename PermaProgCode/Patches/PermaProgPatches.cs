@@ -23,7 +23,7 @@ public static class PermaProgPatches
     [HarmonyPrefix]
     public static void IncreaseGoldRewardDuringRun(ref int min, ref int max, Player player)
     {
-        var balancingMultiplier = PP.BalancingEnabled ? 0.8 : 1.0;
+        var balancingMultiplier = PP.BalancingEnabled ? 0.9 : 1.0;
         min = (int)Math.Round(min * balancingMultiplier * (1.0 + PP.GoldGainValue / 100.0));
         max = (int)Math.Round(max * balancingMultiplier * (1.0 + PP.GoldGainValue / 100.0));
     }
