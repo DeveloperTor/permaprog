@@ -52,11 +52,11 @@ public static class PermaProgPatches
     public static void IncrementTotalCurrencyGained(AbstractRoom? preFinishedRoom, bool saveProgress)
     {
         if (PP.CurrencyToGain <= 0) return;
-        MF.Log.Info($"Add currency reward ({PP.CurrencyToGain}) to total currency gained during run");
         PP.TotalCurrencyGainedDuringRun += PP.CurrencyToGain;
-        MF.Log.Info($"Total currency gained during run: {PP.TotalCurrencyGainedDuringRun}");
+        MF.Log.Info($"Add currency reward ({PP.CurrencyToGain}) to " +
+                    $"total currency gained during run (result: {PP.TotalCurrencyGainedDuringRun})");
         PP.CurrencyGainedLastRunText = PP.TotalCurrencyGainedDuringRun.ToString();
-        MF.Log.Info($"Add currency reward ({PP.CurrencyToGain}) to available currency");
+        MF.Log.Info("Add currency reward to available currency");
         PP.CurrencyAvailable += PP.CurrencyToGain;
         PP.CurrencyToGain = 0;
         ModConfig.SaveDebounced<PP>();
@@ -99,6 +99,7 @@ public static class PermaProgPatches
     public static void ContinueRunFromMainMenu(NButton _)
     {
         MF.Log.Info("Run continued from main menu. Setting RunOngoing to true");
+        PP.CurrencyToGain = 0;
         PP.RunOngoing = true;
     }
 
@@ -107,6 +108,7 @@ public static class PermaProgPatches
     public static void AbandonRunFromMainMenu(NMainMenu __instance)
     {
         MF.Log.Info("Run abandoned from main menu. Setting RunOngoing to false");
+        PP.CurrencyToGain = 0;
         PP.RunOngoing = false;
     }
 
