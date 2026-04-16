@@ -58,8 +58,6 @@ internal class PP : SimpleModConfig
             optionContainer.AddChild(CreateSectionHeader("..some beings... ..are yet to... ..be revealed..."));
             optionContainer.AddChild(CreateSectionHeader("???"));
 
-            if (!DebugMenuEnabled) return;
-
             Upgrades.CurrencyInterest.Unlocked = false;
             Upgrades.CardUpgrades.Unlocked = false;
             Upgrades.CommonRelic.Unlocked = false;
