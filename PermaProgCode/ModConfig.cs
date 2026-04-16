@@ -36,7 +36,7 @@ internal class PP : SimpleModConfig
 
         _optionContainer.AddChild(CreateToggleOption(GetPropertyInfo(nameof(BalancingEnabled))));
         CreateLineEdit(nameof(CurrencyGainedLastRunText), 20);
-        CreateLineEdit(nameof(CurrencyText), 50);
+        CreateLineEdit(nameof(CurrencyText), 50, true);
         _optionContainer.AddChild(CreateDividerControl());
 
         _optionContainer.AddChild(CreateSectionHeader("Tier 1 upgrades"));
@@ -301,7 +301,7 @@ internal class PP : SimpleModConfig
         return true;
     }
 
-    private void CreateLineEdit(string name, int fontSize, bool isEditable = false)
+    private void CreateLineEdit(string name, int fontSize, bool addHoverTip = false, bool isEditable = false)
     {
         var propertyInfo = GetPropertyInfo(name);
         var headerRow = CreateLineEditOption(propertyInfo);
@@ -310,6 +310,8 @@ internal class PP : SimpleModConfig
             header.AddThemeFontSizeOverride("font_size", fontSize);
             header.Editable = isEditable;
         }
+
+        if (addHoverTip) headerRow.AddHoverTip();
 
         _optionContainer?.AddChild(headerRow);
     }

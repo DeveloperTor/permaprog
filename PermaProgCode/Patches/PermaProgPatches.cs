@@ -114,10 +114,10 @@ public static class PermaProgPatches
     // Helpers
     private static void ApplyInterest(RunState state)
     {
-        if (state.CurrentActIndex < 2) return;
+        if (state.CurrentActIndex < 3 || PP.CurrencyInterestValue <= 0.1) return;
 
-        var interest = (double)PP.CurrencyAvailable;
-        interest *= PP.CurrencyInterestValue / 100.0;
+        var interest = PP.CurrencyAvailable * PP.CurrencyInterestValue / 100.0;
+        interest = Math.Min(interest, 3000);
         MF.Log.Info($"Gain {(int)interest} in interest");
         PP.CurrencyAvailable += (int)interest;
     }
