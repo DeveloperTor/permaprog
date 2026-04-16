@@ -39,37 +39,37 @@ public class UpgradeableData
         {
             StartGold.MaxLevel = 10;
             StartGold.Vals = [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200];
-            StartGold.UpgCosts = [0, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800];
+            StartGold.UpgCosts = [0, 400, 800, 1200, 1600, 2400, 3200, 4000, 4800, 6000];
         }
 
         {
             CurrencyGain.MaxLevel = 10;
-            CurrencyGain.Vals = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
-            CurrencyGain.UpgCosts = [100, 300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700];
+            CurrencyGain.Vals = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+            CurrencyGain.UpgCosts = [300, 600, 900, 1200, 1500, 2100, 2700, 3300, 3900, 4000];
         }
 
         {
             MaxHealth.MaxLevel = 10;
             MaxHealth.Vals = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
-            MaxHealth.UpgCosts = [150, 500, 850, 1200, 1550, 1900, 2250, 2600, 2950, 3300];
+            MaxHealth.UpgCosts = [500, 950, 1400, 1850, 2300, 3200, 4100, 5000, 5900, 7000];
         }
 
         {
             CardUpgrades.MaxLevel = 10;
             CardUpgrades.Vals = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-            CardUpgrades.UpgCosts = [1000, 1400, 1800, 2200, 2700, 3200, 3700, 4200, 4700, 5000];
+            CardUpgrades.UpgCosts = [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000];
         }
 
         {
             CurrencyInterest.MaxLevel = 5;
-            CurrencyInterest.Vals = [0, 4, 8, 12, 16, 20];
+            CurrencyInterest.Vals = [0, 5, 10, 15, 20, 25];
             CurrencyInterest.UpgCosts = [500, 1000, 1500, 2000, 2500];
         }
 
         {
             GoldGain.MaxLevel = 10;
             GoldGain.Vals = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
-            GoldGain.UpgCosts = [100, 300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700];
+            GoldGain.UpgCosts = [600, 1200, 1800, 2400, 3000, 3600, 4200, 4800, 5400, 6000];
         }
 
         {
@@ -81,7 +81,7 @@ public class UpgradeableData
         {
             CardRarity.MaxLevel = 5;
             CardRarity.Vals = [0, 20, 40, 60, 80, 100];
-            CardRarity.UpgCosts = [5000, 10000, 15000, 20000, 25000];
+            CardRarity.UpgCosts = [4000, 8000, 12000, 20000, 25000];
         }
 
         {

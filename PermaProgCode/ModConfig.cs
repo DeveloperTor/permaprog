@@ -13,6 +13,7 @@ internal class PP : SimpleModConfig
     private static Control? _optionContainer;
     [ConfigIgnore] public static UpgradeableData Upgrades { get; } = new();
     [ConfigIgnore] public static int CurrencyToGain { get; set; }
+    [ConfigIgnore] public static bool RunOngoing { get; set; }
     [ConfigHideInUI] public static int TotalCurrencyGainedDuringRun { get; set; }
     [ConfigHideInUI] public static int CurrencyAvailable { get; set; }
     public static bool DebugMenuEnabled { get; set; }
@@ -35,7 +36,7 @@ internal class PP : SimpleModConfig
 
         _optionContainer.AddChild(CreateToggleOption(GetPropertyInfo(nameof(BalancingEnabled))));
         CreateLineEdit(nameof(CurrencyGainedLastRunText), 20);
-        CreateLineEdit(nameof(CurrencyText), 50);
+        CreateLineEdit(nameof(CurrencyText), 50, true);
         _optionContainer.AddChild(CreateDividerControl());
 
         _optionContainer.AddChild(CreateSectionHeader("Tier 1 upgrades"));
@@ -112,34 +113,42 @@ internal class PP : SimpleModConfig
         }
     }
 
-    // Tickboxes
-    public static int CommonRelicLevel { get; set; }
+    // Checkboxes
     public static bool CommonRelicValue { get; set; }
+    public static int CommonRelicLevel { get; set; }
 
     // Sliders
+    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0} gold")]
+    public static double StartGoldValue { get; set; }
     public static int StartGoldLevel { get; set; }
-    [SliderRange(0.0, 1000.0)] public static double StartGoldValue { get; set; }
 
+    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0}%")]
+    public static double CurrencyGainValue { get; set; }
     public static int CurrencyGainLevel { get; set; }
-    [SliderRange(0.0, 1000.0)] public static double CurrencyGainValue { get; set; }
 
+    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0} hp")]
+    public static double MaxHealthValue { get; set; }
     public static int MaxHealthLevel { get; set; }
-    [SliderRange(0.0, 1000.0)] public static double MaxHealthValue { get; set; }
 
+    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0} card(s)")]
+    public static double CardUpgradesValue { get; set; }
     public static int CardUpgradesLevel { get; set; }
-    [SliderRange(0.0, 1000.0)] public static double CardUpgradesValue { get; set; }
 
+    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0}%")]
+    public static double CurrencyInterestValue { get; set; }
     public static int CurrencyInterestLevel { get; set; }
-    [SliderRange(0.0, 1000.0)] public static double CurrencyInterestValue { get; set; }
 
+    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0}%")]
+    public static double GoldGainValue { get; set; }
     public static int GoldGainLevel { get; set; }
-    [SliderRange(0.0, 1000.0)] public static double GoldGainValue { get; set; }
 
+    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0} block")]
+    public static double BlockGainValue { get; set; }
     public static int BlockGainLevel { get; set; }
-    [SliderRange(0.0, 1000.0)] public static double BlockGainValue { get; set; }
 
+    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0}%")]
+    public static double CardRarityValue { get; set; }
     public static int CardRarityLevel { get; set; }
-    [SliderRange(0.0, 1000.0)] public static double CardRarityValue { get; set; }
 
     // Buttons
     public void UpgradeButtonStartGold()
@@ -211,7 +220,7 @@ internal class PP : SimpleModConfig
         foreach (var upg in Upgrades.All.Keys.Where(upg => upg.Unlocked))
         {
             UpdateSliders(upg);
-            UpdateTickboxes(upg);
+            UpdateCheckboxes(upg);
             UpdateButtons(upg);
         }
     }
@@ -257,11 +266,11 @@ internal class PP : SimpleModConfig
         }
     }
 
-    private static void UpdateTickboxes(UpgradeableModel upg)
+    private static void UpdateCheckboxes(UpgradeableModel upg)
     {
-        var tickboxRow = _optionContainer?.GetNode<NConfigOptionRow>(upg.ValueName);
-        if (tickboxRow?.SettingControl is not NConfigTickbox tickbox) return;
-        tickbox.Visible = upg.CurrentLevel >= upg.MaxLevel;
+        var checkboxRow = _optionContainer?.GetNode<NConfigOptionRow>(upg.ValueName);
+        if (checkboxRow?.SettingControl is not NConfigTickbox checkbox) return;
+        checkbox.Visible = upg.CurrentLevel >= upg.MaxLevel;
     }
 
     private void UpdateButtons(UpgradeableModel upg)
@@ -292,7 +301,7 @@ internal class PP : SimpleModConfig
         return true;
     }
 
-    private void CreateLineEdit(string name, int fontSize, bool isEditable = false)
+    private void CreateLineEdit(string name, int fontSize, bool addHoverTip = false, bool isEditable = false)
     {
         var propertyInfo = GetPropertyInfo(name);
         var headerRow = CreateLineEditOption(propertyInfo);
@@ -302,14 +311,16 @@ internal class PP : SimpleModConfig
             header.Editable = isEditable;
         }
 
+        if (addHoverTip) headerRow.AddHoverTip();
+
         _optionContainer?.AddChild(headerRow);
     }
 
     private void CreateUpgradeableUi(UpgradeableModel upg, Action onPressed, bool addHoverTip = false,
-        bool isTickbox = false
+        bool isCheckbox = false
     )
     {
-        var optionRow = isTickbox
+        var optionRow = isCheckbox
             ? CreateToggleOption(GetPropertyInfo(upg.ValueName))
             : CreateSliderOption(GetPropertyInfo(upg.ValueName));
 

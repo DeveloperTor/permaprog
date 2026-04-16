@@ -24,8 +24,10 @@
   "PERMAPROG-UPGRADE_BUTTON_CARD_RARITY.title": "Upgrade +20 %",
   "PERMAPROG-UPGRADE_BUTTON_COMMON_RELIC.title": "Unlock",
 
+  "PERMAPROG-CURRENCY_TEXT.hover.title": "Currency",
+  "PERMAPROG-CURRENCY_TEXT.hover.desc": "Currency is earned by gaining gold during a run",
   "PERMAPROG-CURRENCY_INTEREST_VALUE.hover.title": "Currency interest",
-  "PERMAPROG-CURRENCY_INTEREST_VALUE.hover.desc": "Gain <X>% interest on saved currency. Only applies if Act 2 is reached during the run",
+  "PERMAPROG-CURRENCY_INTEREST_VALUE.hover.desc": "Gain <X>% interest on saved currency. Only applies if Act 3 is reached during the run. Maximum return from interest: 3000 currency",
   "PERMAPROG-GOLD_GAIN_VALUE.hover.title": "Gold gained",
   "PERMAPROG-GOLD_GAIN_VALUE.hover.desc": "Increases the gold reward received after combat by <X>%",
   "PERMAPROG-CARD_UPGRADES_VALUE.hover.title": "Upgraded starting cards",

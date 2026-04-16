@@ -34,6 +34,6 @@ public static class SetStartingGold
 
     public static void Postfix(CharacterModel __instance, ref int __result)
     {
-        SetGold(__instance, ref __result);
+        if(!PP.RunOngoing) SetGold(__instance, ref __result);
     }
 }
