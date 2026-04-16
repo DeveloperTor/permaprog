@@ -16,6 +16,8 @@ public static class PlayerPatches
     public static void StartNewRun(Player __instance)
     {
         MF.Log.Info("Starting new run");
+        MF.Log.Info("Setting RunOngoing to true");
+        PP.RunOngoing = true;
 
         PP.TotalCurrencyGainedDuringRun = 0;
         ModConfig.SaveDebounced<PP>();

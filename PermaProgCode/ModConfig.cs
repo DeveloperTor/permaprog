@@ -13,6 +13,7 @@ internal class PP : SimpleModConfig
     private static Control? _optionContainer;
     [ConfigIgnore] public static UpgradeableData Upgrades { get; } = new();
     [ConfigIgnore] public static int CurrencyToGain { get; set; }
+    [ConfigIgnore] public static bool RunOngoing { get; set; }
     [ConfigHideInUI] public static int TotalCurrencyGainedDuringRun { get; set; }
     [ConfigHideInUI] public static int CurrencyAvailable { get; set; }
     public static bool DebugMenuEnabled { get; set; }
@@ -112,7 +113,7 @@ internal class PP : SimpleModConfig
         }
     }
 
-    // Tickboxes
+    // Checkboxes
     public static bool CommonRelicValue { get; set; }
     public static int CommonRelicLevel { get; set; }
 
@@ -219,7 +220,7 @@ internal class PP : SimpleModConfig
         foreach (var upg in Upgrades.All.Keys.Where(upg => upg.Unlocked))
         {
             UpdateSliders(upg);
-            UpdateTickboxes(upg);
+            UpdateCheckboxes(upg);
             UpdateButtons(upg);
         }
     }
@@ -265,11 +266,11 @@ internal class PP : SimpleModConfig
         }
     }
 
-    private static void UpdateTickboxes(UpgradeableModel upg)
+    private static void UpdateCheckboxes(UpgradeableModel upg)
     {
-        var tickboxRow = _optionContainer?.GetNode<NConfigOptionRow>(upg.ValueName);
-        if (tickboxRow?.SettingControl is not NConfigTickbox tickbox) return;
-        tickbox.Visible = upg.CurrentLevel >= upg.MaxLevel;
+        var checkboxRow = _optionContainer?.GetNode<NConfigOptionRow>(upg.ValueName);
+        if (checkboxRow?.SettingControl is not NConfigTickbox checkbox) return;
+        checkbox.Visible = upg.CurrentLevel >= upg.MaxLevel;
     }
 
     private void UpdateButtons(UpgradeableModel upg)
@@ -314,10 +315,10 @@ internal class PP : SimpleModConfig
     }
 
     private void CreateUpgradeableUi(UpgradeableModel upg, Action onPressed, bool addHoverTip = false,
-        bool isTickbox = false
+        bool isCheckbox = false
     )
     {
-        var optionRow = isTickbox
+        var optionRow = isCheckbox
             ? CreateToggleOption(GetPropertyInfo(upg.ValueName))
             : CreateSliderOption(GetPropertyInfo(upg.ValueName));
 

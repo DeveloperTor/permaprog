@@ -34,6 +34,6 @@ public static class SetStartingHpPatch
 
     public static void Postfix(CharacterModel __instance, ref int __result)
     {
-        SetHp(__instance, ref __result);
+        if(!PP.RunOngoing) SetHp(__instance, ref __result);
     }
 }

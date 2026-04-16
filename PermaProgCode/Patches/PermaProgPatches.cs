@@ -1,4 +1,6 @@
 using MegaCrit.Sts2.Core.Nodes.Screens.GameOverScreen;
+using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
+using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Achievements;
@@ -61,24 +63,17 @@ public static class PermaProgPatches
     [HarmonyPrefix]
     public static void SaveDataAtEndOfRun(RunState state, Player player, bool isVictory)
     {
-        if (state.CurrentActIndex >= 2)
-        {
-            var interest = (double)PP.CurrencyAvailable;
-            interest *= PP.CurrencyInterestValue / 100.0;
-            MF.Log.Info($"Gain {(int)interest} in interest");
-            PP.CurrencyAvailable += (int)interest;
-        }
+        MF.Log.Info("Run ended.");
+        ApplyInterest(state);
+        AddLastCurrencyRewardToTotal();
 
-        if (PP.CurrencyToGain > 0)
-        {
-            MF.Log.Info($"Add last currency reward ({PP.CurrencyToGain}) to total currency gained");
-            PP.TotalCurrencyGainedDuringRun += PP.CurrencyToGain;
-            PP.CurrencyToGain = 0;
-        }
-
-        MF.Log.Info($"Run ended. Adding {PP.TotalCurrencyGainedDuringRun} to available currency");
+        MF.Log.Info($"Adding {PP.TotalCurrencyGainedDuringRun} to available currency");
         PP.CurrencyGainedLastRunText = PP.TotalCurrencyGainedDuringRun.ToString();
         PP.CurrencyAvailable += PP.TotalCurrencyGainedDuringRun;
+
+        MF.Log.Info("Setting RunOngoing to false");
+        PP.RunOngoing = false;
+
         ModConfig.SaveDebounced<PP>();
     }
 
@@ -98,5 +93,41 @@ public static class PermaProgPatches
         if (!label.Contains("Gold")) return;
         MF.Log.Info("Exchange end-of-run 'Gold gained' reward badge to 'Currency Gained'");
         label = label.Replace("Gold", "Currency");
+    }
+
+    [HarmonyPatch(typeof(NMainMenu), "OnContinueButtonPressed")]
+    [HarmonyPostfix]
+    public static void ContinueRunFromMainMenu(NButton _)
+    {
+        MF.Log.Info("Run continued from main menu. Setting RunOngoing to true");
+        PP.RunOngoing = true;
+    }
+
+    [HarmonyPatch(typeof(NMainMenu), nameof(NMainMenu.AbandonRun))]
+    [HarmonyPostfix]
+    public static void AbandonRunFromMainMenu(NMainMenu __instance)
+    {
+        MF.Log.Info("Run abandoned from main menu. Setting RunOngoing to false");
+        PP.RunOngoing = false;
+    }
+
+    // Helpers
+    private static void ApplyInterest(RunState state)
+    {
+        if (state.CurrentActIndex < 2) return;
+
+        var interest = (double)PP.CurrencyAvailable;
+        interest *= PP.CurrencyInterestValue / 100.0;
+        MF.Log.Info($"Gain {(int)interest} in interest");
+        PP.CurrencyAvailable += (int)interest;
+    }
+
+    private static void AddLastCurrencyRewardToTotal()
+    {
+        if (PP.CurrencyToGain <= 0) return;
+
+        MF.Log.Info($"Add last currency reward ({PP.CurrencyToGain}) to total currency gained");
+        PP.TotalCurrencyGainedDuringRun += PP.CurrencyToGain;
+        PP.CurrencyToGain = 0;
     }
 }
