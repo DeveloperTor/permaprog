@@ -43,8 +43,8 @@ public static class PermaProgPatches
     {
         var currencyGained = (double)amount * (1.0 + PP.CurrencyGainValue / 100.0);
         MF.Log.Info($"Currency to gain: {(int)currencyGained} from {amount} gold " +
-                    $"with multiplier {1.0 + PP.CurrencyGainValue / 100.0}.");
-        PP.CurrencyToGain = (int)currencyGained;
+                    $"with multiplier {1.0 + PP.CurrencyGainValue / 100.0}");
+        PP.CurrencyToGain += (int)currencyGained;
     }
 
     [HarmonyPatch(typeof(SaveManager), "SaveRun")]
@@ -52,9 +52,12 @@ public static class PermaProgPatches
     public static void IncrementTotalCurrencyGained(AbstractRoom? preFinishedRoom, bool saveProgress)
     {
         if (PP.CurrencyToGain <= 0) return;
-        MF.Log.Info($"Add currency reward ({PP.CurrencyToGain}) to total currency gained");
+        MF.Log.Info($"Add currency reward ({PP.CurrencyToGain}) to total currency gained during run");
         PP.TotalCurrencyGainedDuringRun += PP.CurrencyToGain;
-        MF.Log.Info($"Total currency gained during run: {PP.TotalCurrencyGainedDuringRun}.");
+        MF.Log.Info($"Total currency gained during run: {PP.TotalCurrencyGainedDuringRun}");
+        PP.CurrencyGainedLastRunText = PP.TotalCurrencyGainedDuringRun.ToString();
+        MF.Log.Info($"Add currency reward ({PP.CurrencyToGain}) to available currency");
+        PP.CurrencyAvailable += PP.CurrencyToGain;
         PP.CurrencyToGain = 0;
         ModConfig.SaveDebounced<PP>();
     }
@@ -65,11 +68,7 @@ public static class PermaProgPatches
     {
         MF.Log.Info("Run ended.");
         ApplyInterest(state);
-        AddLastCurrencyRewardToTotal();
-
-        MF.Log.Info($"Adding {PP.TotalCurrencyGainedDuringRun} to available currency");
-        PP.CurrencyGainedLastRunText = PP.TotalCurrencyGainedDuringRun.ToString();
-        PP.CurrencyAvailable += PP.TotalCurrencyGainedDuringRun;
+        AddLastCurrencyRewardToAvailableCurrency();
 
         MF.Log.Info("Setting RunOngoing to false");
         PP.RunOngoing = false;
@@ -116,17 +115,19 @@ public static class PermaProgPatches
     {
         if (state.CurrentActIndex < 3 || PP.CurrencyInterestValue <= 0.1) return;
 
-        var interest = PP.CurrencyAvailable * PP.CurrencyInterestValue / 100.0;
-        interest = Math.Min(interest, 3000);
+        var interest = (PP.CurrencyAvailable - PP.TotalCurrencyGainedDuringRun) * PP.CurrencyInterestValue / 100.0;
+        interest = Math.Clamp(interest, 0.0, 3000.0);
         MF.Log.Info($"Gain {(int)interest} in interest");
+        PP.TotalCurrencyGainedDuringRun += (int)interest;
         PP.CurrencyAvailable += (int)interest;
     }
 
-    private static void AddLastCurrencyRewardToTotal()
+    private static void AddLastCurrencyRewardToAvailableCurrency()
     {
         if (PP.CurrencyToGain <= 0) return;
 
-        MF.Log.Info($"Add last currency reward ({PP.CurrencyToGain}) to total currency gained");
+        MF.Log.Info($"Add last currency reward ({PP.CurrencyToGain}) to available & total currency gained");
+        PP.CurrencyAvailable += PP.CurrencyToGain;
         PP.TotalCurrencyGainedDuringRun += PP.CurrencyToGain;
         PP.CurrencyToGain = 0;
     }
