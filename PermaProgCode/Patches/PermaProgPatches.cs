@@ -52,14 +52,8 @@ public static class PermaProgPatches
     public static void IncrementTotalCurrencyGained(AbstractRoom? preFinishedRoom, bool saveProgress)
     {
         if (PP.CurrencyToGain <= 0) return;
-        PP.TotalCurrencyGainedDuringRun += PP.CurrencyToGain;
-        MF.Log.Info($"Add currency reward ({PP.CurrencyToGain}) to " +
-                    $"total currency gained during run (result: {PP.TotalCurrencyGainedDuringRun})");
-        PP.CurrencyGainedLastRunText = PP.TotalCurrencyGainedDuringRun.ToString();
-        MF.Log.Info("Add currency reward to available currency");
-        PP.CurrencyAvailable += PP.CurrencyToGain;
-        PP.CurrencyToGain = 0;
-        ModConfig.SaveDebounced<PP>();
+        MF.Log.Info("Adding via 'SaveRun'");
+        SaveCurrency();
     }
 
     [HarmonyPatch(typeof(AchievementsHelper), "AfterRunEnded")]
@@ -72,8 +66,6 @@ public static class PermaProgPatches
 
         MF.Log.Info("Setting RunOngoing to false");
         PP.RunOngoing = false;
-
-        ModConfig.SaveDebounced<PP>();
     }
 
     [HarmonyPatch(typeof(NGameOverScreen), "AddScoreLine")]
@@ -127,10 +119,19 @@ public static class PermaProgPatches
     private static void AddLastCurrencyRewardToAvailableCurrency()
     {
         if (PP.CurrencyToGain <= 0) return;
+        MF.Log.Info("Adding via 'AfterRunEnded'");
+        SaveCurrency();
+    }
 
-        MF.Log.Info($"Add last currency reward ({PP.CurrencyToGain}) to available & total currency gained");
-        PP.CurrencyAvailable += PP.CurrencyToGain;
+    private static void SaveCurrency()
+    {
         PP.TotalCurrencyGainedDuringRun += PP.CurrencyToGain;
+        MF.Log.Info($"Add currency reward ({PP.CurrencyToGain}) to " +
+                    $"total currency gained during run (result: {PP.TotalCurrencyGainedDuringRun})");
+        PP.CurrencyGainedLastRunText = PP.TotalCurrencyGainedDuringRun.ToString();
+        MF.Log.Info("Add currency reward to available currency");
+        PP.CurrencyAvailable += PP.CurrencyToGain;
         PP.CurrencyToGain = 0;
+        ModConfig.SaveDebounced<PP>();
     }
 }
