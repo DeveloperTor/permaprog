@@ -76,21 +76,21 @@ public static class PermaProgPatches
         ModConfig.SaveDebounced<PP>();
     }
 
-    [HarmonyPatch(typeof(NGameOverScreen), "AddBadge")]
+    [HarmonyPatch(typeof(NGameOverScreen), "AddScoreLine")]
     [HarmonyPrefix]
-    public static void UpdateBadgeInfo(string locEntryKey, string? locAmountKey, ref int amount, string? iconPath)
+    public static void ChangeGoldAmountToCurrencyAmount(string locEntryKey, string? locAmountKey, ref int amount, string? iconPath)
     {
-        if (locEntryKey != "BADGE.goldGained") return;
+        if (locEntryKey != "SCORE_LINE.goldGained") return;
         MF.Log.Info($"Exchange end-of-run gold ({amount}) to currency gained ({PP.TotalCurrencyGainedDuringRun})");
         amount = PP.TotalCurrencyGainedDuringRun;
     }
 
-    [HarmonyPatch(typeof(NBadge), "Create")]
+    [HarmonyPatch(typeof(NScoreLine), "Create")]
     [HarmonyPrefix]
-    public static void CreateBadge(ref string label, Texture2D? icon)
+    public static void ChangeGoldScoreTextToCurrency(ref string label, Texture2D? icon)
     {
         if (!label.Contains("Gold")) return;
-        MF.Log.Info("Exchange end-of-run 'Gold gained' reward badge to 'Currency Gained'");
+        MF.Log.Info("Exchange end-of-run 'Gold gained' text to 'Currency Gained'");
         label = label.Replace("Gold", "Currency");
     }
 
