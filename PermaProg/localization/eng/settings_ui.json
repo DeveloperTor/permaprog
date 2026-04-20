@@ -33,5 +33,8 @@
   "PERMAPROG-CARD_UPGRADES_VALUE.hover.title": "Upgraded starting cards",
   "PERMAPROG-CARD_UPGRADES_VALUE.hover.desc": "Upgrades <X> random cards at the start of the run",
   "PERMAPROG-CARD_RARITY_VALUE.hover.title": "Card rarity chance",
-  "PERMAPROG-CARD_RARITY_VALUE.hover.desc": "Increases odds of receiving more rare cards by <X>% (based on current chance)"
+  "PERMAPROG-CARD_RARITY_VALUE.hover.desc": "Increases odds of receiving more rare cards by <X>% (based on current chance)",
+
+  "PERMAPROG-CURRENCY_LABEL.hover.title": "PermaProg Currency",
+  "PERMAPROG-CURRENCY_LABEL.hover.desc": "The amount of available currency in the PermaProg Shop"
 }

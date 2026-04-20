@@ -52,19 +52,25 @@ public partial class MF : Node
                 await _tree?.ToSignal(node, Node.SignalName.Ready)!;
             }
 
-            var leftAligned = node.GetNode("LeftAlignedStuff");
-            var topBarGold = leftAligned.GetNode("TopBarGold");
-            var labelCopy = (MegaLabel)topBarGold.GetNode("GoldLabel").Duplicate();
-            labelCopy.Name = "CurrencyLabel";
-            labelCopy.SetTextAutoSize(PP.CurrencyAvailable.ToString());
-            labelCopy.Modulate = Colors.GreenYellow;
-            CurrencyLabel = labelCopy;
-            topBarGold.AddChildSafely(labelCopy);
-            topBarGold.MoveChild(labelCopy, 0);
+            AddCurrencyLabel(node);
+
         }
         catch (Exception e)
         {
             Log.Warn("Error finding tree, currencylabel might not work: " + e);
         }
+    }
+
+    private static void AddCurrencyLabel(Node node)
+    {
+        var leftAligned = node.GetNode("LeftAlignedStuff");
+        var topBarGold = leftAligned.GetNode("TopBarGold");
+        var labelCopy = (MegaLabel)topBarGold.GetNode("GoldLabel").Duplicate();
+        labelCopy.Name = "CurrencyLabel";
+        labelCopy.SetTextAutoSize(PP.CurrencyAvailable.ToString());
+        labelCopy.Modulate = Colors.GreenYellow;
+        CurrencyLabel = labelCopy;
+        topBarGold.AddChildSafely(labelCopy);
+        topBarGold.MoveChild(labelCopy, 0);
     }
 }
