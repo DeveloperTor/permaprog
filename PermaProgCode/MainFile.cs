@@ -1,4 +1,6 @@
 using Logger = MegaCrit.Sts2.Core.Logging.Logger;
+using MegaCrit.Sts2.addons.mega_text;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Debug;
@@ -6,10 +8,6 @@ using System.Reflection;
 using BaseLib.Config;
 using HarmonyLib;
 using Godot;
-using MegaCrit.Sts2.addons.mega_text;
-using MegaCrit.Sts2.Core.Helpers;
-using MegaCrit.sts2.Core.Nodes.TopBar;
-using PermaProg.PermaProgCode.Model;
 
 namespace PermaProg.PermaProgCode;
 
@@ -20,7 +18,9 @@ public partial class MF : Node
     public const string ResPath = $"res://{ModId}";
     public static Logger Log { get; } = new(ModId, LogType.Generic);
 
-    public static SceneTree? _tree;
+    private static SceneTree? _tree;
+
+    public static MegaLabel? CurrencyLabel;
 
     public static void Initialize()
     {
@@ -43,72 +43,28 @@ public partial class MF : Node
 
     async private static void OnNodeAdded(Node node)
     {
-        if (node.Name == "TopBar")
+        try
         {
-            if (node is Control)
+            if (node.Name != "TopBar") return;
+            if (node is not Control) return;
+            if (!node.IsNodeReady())
             {
-                if (!node.IsNodeReady())
-                {
-                    await _tree.ToSignal(node, Node.SignalName.Ready);
-                }
-                Log.Info("TopBar:");
-                foreach (var VARIABLE in node.GetChildren())
-                {
-                    GD.Print(VARIABLE.Name);
-                }
-
-                var leftAligned = node.GetNode("LeftAlignedStuff");
-                Log.Info("LeftAlignedStuff:");
-                foreach (var VARIABLE in leftAligned.GetChildren())
-                {
-                    GD.Print(VARIABLE.Name);
-                }
-
-                var topBarGold = leftAligned.GetNode("TopBarGold");
-                Log.Info("TopBarGold:");
-                foreach (var VARIABLE in topBarGold.GetChildren())
-                {
-                    GD.Print(VARIABLE.Name);
-                }
-
-                var labelCopy = (MegaLabel)topBarGold.GetNode("GoldLabel").Duplicate();
-                var iconCopy = topBarGold.GetNode("GoldIcon").Duplicate();
-                GD.Print(iconCopy.GetType().Name);
-                //labelCopy.SetTextAutoSize("yo");
-                //leftAligned.AddChildSafely(labelCopy);
-
-                var curMod = new TopBarCurrencyModel(labelCopy);
-                curMod.Name = "CurrencyLabel";
-                //curMod.MinFontSize = 32;
-                leftAligned.AddChildSafely(curMod);
-                leftAligned.MoveChild(curMod, 4);
-                //leftAligned.MoveChild(labelCopy, 1);
-                foreach (var VARIABLE in leftAligned.GetChildren())
-                {
-                    GD.Print(VARIABLE.Name);
-                }
-
-                // NTopBarGold topBarGoldCopy = (NTopBarGold)leftAligned.GetNode("TopBarGold").Duplicate();
-                // topBarGoldCopy.Name = "TopBarGoldCopy";
-                // Log.Info("TopBarGoldCopy:");
-                // foreach (var VARIABLE in topBarGoldCopy.GetChildren())
-                // {
-                //     GD.Print(VARIABLE.Name);
-                // }
-                //
-                // //topBarGoldCopy.Initialize();
-                //
-                // // foreach (var VARIABLE in leftAligned.GetNode("TopBarGold").GetChildren())
-                // // {
-                // //     copy.AddChild(VARIABLE);
-                // // }
-                // var testss = ModConfig.CreateRawLabelControl("AYO", 24);
-                // var test2 = new TopBarGoldModel();
-                //
-                // //leftAligned.AddChildSafely(topBarGoldCopy);
-                // //leftAligned.AddChildSafely(testss);
-                // leftAligned.AddChildSafely(test2);
+                await _tree?.ToSignal(node, Node.SignalName.Ready)!;
             }
+
+            var leftAligned = node.GetNode("LeftAlignedStuff");
+            var topBarGold = leftAligned.GetNode("TopBarGold");
+            var labelCopy = (MegaLabel)topBarGold.GetNode("GoldLabel").Duplicate();
+            labelCopy.Name = "CurrencyLabel";
+            labelCopy.SetTextAutoSize(PP.CurrencyAvailable.ToString());
+            labelCopy.Modulate = Colors.GreenYellow;
+            CurrencyLabel = labelCopy;
+            topBarGold.AddChildSafely(labelCopy);
+            topBarGold.MoveChild(labelCopy, 0);
+        }
+        catch (Exception e)
+        {
+            Log.Warn("Error finding tree, currencylabel might not work: " + e);
         }
     }
 }
