@@ -6,8 +6,10 @@ using System.Reflection;
 using BaseLib.Config;
 using HarmonyLib;
 using Godot;
+using MegaCrit.Sts2.addons.mega_text;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.sts2.Core.Nodes.TopBar;
+using PermaProg.PermaProgCode.Model;
 
 namespace PermaProg.PermaProgCode;
 
@@ -69,23 +71,43 @@ public partial class MF : Node
                     GD.Print(VARIABLE.Name);
                 }
 
-                NTopBarGold topBarGoldCopy = (NTopBarGold)leftAligned.GetNode("TopBarGold").Duplicate();
-                topBarGoldCopy.Name = "TopBarGoldCopy";
-                Log.Info("TopBarGoldCopy:");
-                foreach (var VARIABLE in topBarGoldCopy.GetChildren())
+                var labelCopy = (MegaLabel)topBarGold.GetNode("GoldLabel").Duplicate();
+                var iconCopy = topBarGold.GetNode("GoldIcon").Duplicate();
+                GD.Print(iconCopy.GetType().Name);
+                //labelCopy.SetTextAutoSize("yo");
+                //leftAligned.AddChildSafely(labelCopy);
+
+                var curMod = new TopBarCurrencyModel(labelCopy);
+                curMod.Name = "CurrencyLabel";
+                //curMod.MinFontSize = 32;
+                leftAligned.AddChildSafely(curMod);
+                leftAligned.MoveChild(curMod, 4);
+                //leftAligned.MoveChild(labelCopy, 1);
+                foreach (var VARIABLE in leftAligned.GetChildren())
                 {
                     GD.Print(VARIABLE.Name);
                 }
 
-                //topBarGoldCopy.Initialize();
-
-                // foreach (var VARIABLE in leftAligned.GetNode("TopBarGold").GetChildren())
+                // NTopBarGold topBarGoldCopy = (NTopBarGold)leftAligned.GetNode("TopBarGold").Duplicate();
+                // topBarGoldCopy.Name = "TopBarGoldCopy";
+                // Log.Info("TopBarGoldCopy:");
+                // foreach (var VARIABLE in topBarGoldCopy.GetChildren())
                 // {
-                //     copy.AddChild(VARIABLE);
+                //     GD.Print(VARIABLE.Name);
                 // }
-
-
-                leftAligned.AddChildSafely(topBarGoldCopy);
+                //
+                // //topBarGoldCopy.Initialize();
+                //
+                // // foreach (var VARIABLE in leftAligned.GetNode("TopBarGold").GetChildren())
+                // // {
+                // //     copy.AddChild(VARIABLE);
+                // // }
+                // var testss = ModConfig.CreateRawLabelControl("AYO", 24);
+                // var test2 = new TopBarGoldModel();
+                //
+                // //leftAligned.AddChildSafely(topBarGoldCopy);
+                // //leftAligned.AddChildSafely(testss);
+                // leftAligned.AddChildSafely(test2);
             }
         }
     }
