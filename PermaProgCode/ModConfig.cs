@@ -346,4 +346,13 @@ internal class PP : SimpleModConfig
         GetPropertyInfo(upg.CurrentLevelName).SetValue(Upgrades, upg.CurrentLevel);
         return false;
     }
+
+    public void InitUpgradeablesCurrentLevel()
+    {
+        foreach (var upg in Upgrades.All.Keys)
+        {
+            var propertyInfo = GetPropertyInfo(upg.CurrentLevelName);
+            upg.CurrentLevel = (int)(propertyInfo.GetValue(Upgrades) ?? throw new InvalidOperationException());
+        }
+    }
 }

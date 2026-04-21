@@ -95,6 +95,11 @@ public static class PermaProgPatches
         MF.Log.Info("Run continued from main menu. Setting RunOngoing to true");
         PP.CurrencyToGain = 0;
         PP.RunOngoing = true;
+
+        foreach (var upg in PP.Upgrades.All.Keys.Where(upg => upg.CurrentLevel > 0))
+        {
+            MF.Log.Info($"{upg.CurrentLevelName} is level {upg.CurrentLevel}");
+        }
     }
 
     [HarmonyPatch(typeof(NMainMenu), nameof(NMainMenu.AbandonRun))]
@@ -128,10 +133,9 @@ public static class PermaProgPatches
     private static void SaveCurrency()
     {
         PP.TotalCurrencyGainedDuringRun += PP.CurrencyToGain;
-        MF.Log.Info($"Add currency reward ({PP.CurrencyToGain}) to " +
+        MF.Log.Info($"Add currency reward ({PP.CurrencyToGain}) to available currency and to " +
                     $"total currency gained during run (result: {PP.TotalCurrencyGainedDuringRun})");
         PP.CurrencyGainedLastRunText = PP.TotalCurrencyGainedDuringRun.ToString();
-        MF.Log.Info("Add currency reward to available currency");
         PP.CurrencyAvailable += PP.CurrencyToGain;
         PP.CurrencyToGain = 0;
         ModConfig.SaveDebounced<PP>();

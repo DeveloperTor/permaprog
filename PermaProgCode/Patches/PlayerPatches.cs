@@ -19,6 +19,11 @@ public static class PlayerPatches
         MF.Log.Info("Setting RunOngoing to true");
         PP.RunOngoing = true;
 
+        foreach (var upg in PP.Upgrades.All.Keys.Where(upg => upg.CurrentLevel > 0))
+        {
+            MF.Log.Info($"{upg.CurrentLevelName} is level {upg.CurrentLevel}");
+        }
+
         PP.TotalCurrencyGainedDuringRun = 0;
         ModConfig.SaveDebounced<PP>();
     }
@@ -30,6 +35,8 @@ public static class PlayerPatches
         var cards = __instance.Deck.Cards;
         var cardsToUpgrade = RandomlySelectedCards(cards, (int)PP.CardUpgradesValue, cards.Count);
         var cardModels = cardsToUpgrade.ToList();
+
+        if (cardModels.Count == 0) return;
 
         MF.Log.Info($"Upgrading {cardModels.Count} cards");
         foreach (var card in cardModels.Where(card => card.IsUpgradable))

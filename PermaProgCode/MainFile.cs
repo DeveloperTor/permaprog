@@ -24,14 +24,16 @@ public partial class MF : Node
 
     public static void Initialize()
     {
-        Logger.GlobalLogLevel = LogLevel.VeryDebug; // Not working :(
-        Log.WillLog(LogLevel.VeryDebug); // Not working :(
         // Have to update manually each release until I figure out an automatic way to get value from the JSON file
         var gameReleaseInfo = ReleaseInfoManager.Instance.ReleaseInfo;
         var modVersion = Assembly.GetExecutingAssembly().GetName().Version = new Version(0, 5, 3);
         Log.Info($"Game version: {gameReleaseInfo?.Version}, branch: {gameReleaseInfo?.Branch}");
         Log.Info("Mod version: " + modVersion);
-        ModConfigRegistry.Register(ModId, new PP());
+
+        var pp = new PP();
+        ModConfigRegistry.Register(ModId, pp);
+        pp.InitUpgradeablesCurrentLevel();
+
         new Harmony(ModId).PatchAll();
 
         _tree = Engine.GetMainLoop() as SceneTree;
