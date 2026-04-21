@@ -47,19 +47,61 @@ public partial class MF : Node
     {
         try
         {
-            if (node.Name != "TopBar") return;
+            if (node.Name != "TopBar" && node.Name != "CharacterSelectScreen") return;
             if (node is not Control) return;
             if (!node.IsNodeReady())
             {
                 await _tree?.ToSignal(node, Node.SignalName.Ready)!;
             }
 
-            AddCurrencyLabel(node);
+            if (node.Name == "TopBar")
+            {
+                AddCurrencyLabel(node);
+            }
+
+            if (node.Name == "CharacterSelectScreen")
+            {
+                CharacterSelectThings(node);
+            }
         }
         catch (Exception e)
         {
             Log.Warn("Error finding node tree, Currency Label might not work: " + e);
         }
+    }
+
+    private static void CharacterSelectThings(Node node)
+    {
+        GD.Print("CharacterSelectScreen:");
+        foreach (var VARIABLE in node.GetChildren())
+        {
+            GD.Print(VARIABLE.Name);
+        }
+
+        GD.Print("CharSelectButtons:");
+        var CharSelectButtons =  node.GetNode("CharSelectButtons");
+        foreach (var VARIABLE in CharSelectButtons.GetChildren())
+        {
+            GD.Print(VARIABLE.Name);
+        }
+
+        GD.Print("ButtonContainer:");
+        var ButtonContainer =  CharSelectButtons.GetNode("ButtonContainer");
+        foreach (var VARIABLE in ButtonContainer.GetChildren())
+        {
+            GD.Print(VARIABLE.Name);
+        }
+
+        GD.Print("CharSelectButton:");
+        var CharSelectButton =  ButtonContainer.GetNode("CharSelectButton").Duplicate();
+        foreach (var VARIABLE in CharSelectButton.GetChildren())
+        {
+            GD.Print(VARIABLE.Name);
+        }
+
+        // CharSelectButton.Name = "ButtonCOPY";
+        // ButtonContainer.AddChild(CharSelectButton);
+        // ButtonContainer.MoveChild(CharSelectButton, 1);
     }
 
     private static void AddCurrencyLabel(Node node)
