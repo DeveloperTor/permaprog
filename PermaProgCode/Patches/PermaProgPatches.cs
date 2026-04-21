@@ -46,7 +46,7 @@ public static class PermaProgPatches
                     $"with multiplier {1.0 + PP.CurrencyGainValue / 100.0}");
         PP.CurrencyToGain += (int)currencyGained;
         MF.Log.Info("Updating top bar currency label");
-        MF.CurrencyLabel?.SetTextAutoSize((PP.CurrencyAvailable + PP.CurrencyToGain).ToString());
+        MF.CurrencyLabel?.SetTextAutoSize((PP.CurrencyAvailable + PP.CurrencyToGain).ToString().PadLeft(7));
     }
 
     [HarmonyPatch(typeof(SaveManager), "SaveRun")]

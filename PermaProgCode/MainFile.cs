@@ -53,11 +53,10 @@ public partial class MF : Node
             }
 
             AddCurrencyLabel(node);
-
         }
         catch (Exception e)
         {
-            Log.Warn("Error finding tree, currencylabel might not work: " + e);
+            Log.Warn("Error finding node tree, Currency Label might not work: " + e);
         }
     }
 
@@ -67,7 +66,7 @@ public partial class MF : Node
         var topBarGold = leftAligned.GetNode("TopBarGold");
         var labelCopy = (MegaLabel)topBarGold.GetNode("GoldLabel").Duplicate();
         labelCopy.Name = "CurrencyLabel";
-        labelCopy.SetTextAutoSize(PP.CurrencyAvailable.ToString());
+        labelCopy.SetTextAutoSize(PP.CurrencyAvailable.ToString().PadLeft(7));
         labelCopy.Modulate = Colors.GreenYellow;
         CurrencyLabel = labelCopy;
         topBarGold.AddChildSafely(labelCopy);

@@ -26,7 +26,7 @@ public class TopBarPatches
         }
         catch (Exception e)
         {
-            MF.Log.Warn("Could not set CurrencyLabel title to green");
+            MF.Log.Warn("Could not set CurrencyLabel title to green: " + e);
         }
     }
 
