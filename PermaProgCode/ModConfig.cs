@@ -116,35 +116,35 @@ internal class PP : SimpleModConfig
     public static int CommonRelicLevel { get; set; }
 
     // Sliders
-    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0} gold")]
+    [ConfigSlider(0.0, 1000.0, Format = "{0:0} gold")]
     public static double StartGoldValue { get; set; }
     public static int StartGoldLevel { get; set; }
 
-    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0}%")]
+    [ConfigSlider(0.0, 1000.0, Format = "{0:0}%")]
     public static double CurrencyGainValue { get; set; }
     public static int CurrencyGainLevel { get; set; }
 
-    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0} hp")]
+    [ConfigSlider(0.0, 1000.0, Format = "{0:0} hp")]
     public static double MaxHealthValue { get; set; }
     public static int MaxHealthLevel { get; set; }
 
-    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0} card(s)")]
+    [ConfigSlider(0.0, 1000.0, Format = "{0:0} card(s)")]
     public static double CardUpgradesValue { get; set; }
     public static int CardUpgradesLevel { get; set; }
 
-    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0}%")]
+    [ConfigSlider(0.0, 1000.0, Format = "{0:0}%")]
     public static double CurrencyInterestValue { get; set; }
     public static int CurrencyInterestLevel { get; set; }
 
-    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0}%")]
+    [ConfigSlider(0.0, 1000.0, Format = "{0:0}%")]
     public static double GoldGainValue { get; set; }
     public static int GoldGainLevel { get; set; }
 
-    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0} block")]
+    [ConfigSlider(0.0, 1000.0, Format = "{0:0} block")]
     public static double BlockGainValue { get; set; }
     public static int BlockGainLevel { get; set; }
 
-    [SliderRange(0.0, 1000.0)] [SliderLabelFormat("{0:0}%")]
+    [ConfigSlider(0.0, 1000.0, Format = "{0:0}%")]
     public static double CardRarityValue { get; set; }
     public static int CardRarityLevel { get; set; }
 
