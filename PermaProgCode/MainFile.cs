@@ -6,8 +6,10 @@ using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Debug;
 using System.Reflection;
 using BaseLib.Config;
+using BaseLib.Extensions;
 using HarmonyLib;
 using Godot;
+using PermaProg.PermaProgCode.UI;
 
 namespace PermaProg.PermaProgCode;
 
@@ -77,6 +79,18 @@ public partial class MF : Node
         {
             GD.Print(VARIABLE.Name);
         }
+
+        // var label = new MegaLabel();
+        // label.MinFontSize = 40;
+        // label.SetTextAutoSize("HEYO");
+        //
+        // var control = new Control();
+        // control.AddChild(label);
+
+        var enterShopButton = new EnterShopButtonUi();
+        node.AddChildSafely(enterShopButton);
+        enterShopButton.GlobalPosition = new Vector2(200, 200);
+
 
         GD.Print("CharSelectButtons:");
         var CharSelectButtons =  node.GetNode("CharSelectButtons");
