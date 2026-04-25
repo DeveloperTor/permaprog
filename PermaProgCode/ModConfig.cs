@@ -46,8 +46,12 @@ internal class PP : SimpleModConfig
 
         UpdateCurrentValues();
         Tier2Upgrades(optionContainer);
+        UpdateCurrentValues();
         Tier3Upgrades(optionContainer);
+        UpdateCurrentValues();
         Tier4Upgrades(optionContainer);
+        UpdateCurrentValues();
+        Tier5Upgrades(optionContainer);
         UpdateUi();
     }
 
@@ -59,7 +63,10 @@ internal class PP : SimpleModConfig
             optionContainer.AddChild(CreateSectionHeader("???"));
 
             Upgrades.CurrencyInterest.Unlocked = false;
+            Upgrades.DexterityGain.Unlocked = false;
+            Upgrades.UncommonRelic.Unlocked = false;
             Upgrades.CardUpgrades.Unlocked = false;
+            Upgrades.StrengthGain.Unlocked = false;
             Upgrades.CommonRelic.Unlocked = false;
             Upgrades.CardRarity.Unlocked = false;
             Upgrades.BlockGain.Unlocked = false;
@@ -99,12 +106,31 @@ internal class PP : SimpleModConfig
         {
             case < 10:
                 break;
-            case < 20:
-                optionContainer.AddChild(CreateSectionHeader("..the journey... ..shall continue... ..with effort..."));
+            case < 15:
+                optionContainer.AddChild(CreateSectionHeader("..there is ... ..yet more... ..to be revealed..."));
                 optionContainer.AddChild(CreateSectionHeader("???"));
                 break;
             default:
                 optionContainer.AddChild(CreateSectionHeader("Tier 4 upgrades"));
+                CreateUpgradeableUi(Upgrades.StrengthGain, UpgradeButtonStrengthGain);
+                CreateUpgradeableUi(Upgrades.DexterityGain, UpgradeButtonDexterityGain);
+                CreateUpgradeableUi(Upgrades.UncommonRelic, UpgradeButtonUncommonRelic, false, true);
+                break;
+        }
+    }
+
+    private void Tier5Upgrades(Control optionContainer)
+    {
+        switch (Upgrades.TotalCurrentLevels)
+        {
+            case < 15:
+                break;
+            case < 20:
+                optionContainer.AddChild(CreateSectionHeader("..the journey... ..continues... .. ever onward..."));
+                optionContainer.AddChild(CreateSectionHeader("???"));
+                break;
+            default:
+                optionContainer.AddChild(CreateSectionHeader("Tier 5 upgrades"));
                 optionContainer.AddChild(CreateSectionHeader("..some beings... ..are yet to... ..be created..."));
                 optionContainer.AddChild(CreateSectionHeader("(end of beta content)"));
                 break;
@@ -114,6 +140,9 @@ internal class PP : SimpleModConfig
     // Checkboxes
     public static bool CommonRelicValue { get; set; }
     public static int CommonRelicLevel { get; set; }
+
+    public static bool UncommonRelicValue { get; set; }
+    public static int UncommonRelicLevel { get; set; }
 
     // Sliders
     [ConfigSlider(0.0, 1000.0, Format = "{0:0} gold")]
@@ -148,46 +177,36 @@ internal class PP : SimpleModConfig
     public static double CardRarityValue { get; set; }
     public static int CardRarityLevel { get; set; }
 
+    [ConfigSlider(0.0, 1000.0, Format = "{0:0} str")]
+    public static double StrengthGainValue { get; set; }
+    public static int StrengthGainLevel { get; set; }
+
+    [ConfigSlider(0.0, 1000.0, Format = "{0:0} dex")]
+    public static double DexterityGainValue { get; set; }
+    public static int DexterityGainLevel { get; set; }
+
     // Buttons
-    public void UpgradeButtonStartGold()
+    public void UpgradeButtonUncommonRelic()
     {
-        if (IsLevelUpSuccessful(Upgrades.StartGold)) StartGoldLevel++;
+        if (IsLevelUpSuccessful(Upgrades.UncommonRelic)) UncommonRelicLevel++;
         UpdateUi();
     }
 
-    public void UpgradeButtonCurrencyGain()
+    public void UpgradeButtonDexterityGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.CurrencyGain)) CurrencyGainLevel++;
+        if (IsLevelUpSuccessful(Upgrades.DexterityGain)) DexterityGainLevel++;
         UpdateUi();
     }
 
-    public void UpgradeButtonMaxHealth()
+    public void UpgradeButtonStrengthGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.MaxHealth)) MaxHealthLevel++;
+        if (IsLevelUpSuccessful(Upgrades.StrengthGain)) StrengthGainLevel++;
         UpdateUi();
     }
 
-    public void UpgradeButtonCardUpgrades()
+    public void UpgradeButtonCommonRelic()
     {
-        if (IsLevelUpSuccessful(Upgrades.CardUpgrades)) CardUpgradesLevel++;
-        UpdateUi();
-    }
-
-    public void UpgradeButtonCurrencyInterest()
-    {
-        if (IsLevelUpSuccessful(Upgrades.CurrencyInterest)) CurrencyInterestLevel++;
-        UpdateUi();
-    }
-
-    public void UpgradeButtonGoldGain()
-    {
-        if (IsLevelUpSuccessful(Upgrades.GoldGain)) GoldGainLevel++;
-        UpdateUi();
-    }
-
-    public void UpgradeButtonBlockGain()
-    {
-        if (IsLevelUpSuccessful(Upgrades.BlockGain)) BlockGainLevel++;
+        if (IsLevelUpSuccessful(Upgrades.CommonRelic)) CommonRelicLevel++;
         UpdateUi();
     }
 
@@ -197,9 +216,45 @@ internal class PP : SimpleModConfig
         UpdateUi();
     }
 
-    public void UpgradeButtonCommonRelic()
+    public void UpgradeButtonBlockGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.CommonRelic)) CommonRelicLevel++;
+        if (IsLevelUpSuccessful(Upgrades.BlockGain)) BlockGainLevel++;
+        UpdateUi();
+    }
+
+    public void UpgradeButtonGoldGain()
+    {
+        if (IsLevelUpSuccessful(Upgrades.GoldGain)) GoldGainLevel++;
+        UpdateUi();
+    }
+
+    public void UpgradeButtonCurrencyInterest()
+    {
+        if (IsLevelUpSuccessful(Upgrades.CurrencyInterest)) CurrencyInterestLevel++;
+        UpdateUi();
+    }
+
+    public void UpgradeButtonCardUpgrades()
+    {
+        if (IsLevelUpSuccessful(Upgrades.CardUpgrades)) CardUpgradesLevel++;
+        UpdateUi();
+    }
+
+    public void UpgradeButtonMaxHealth()
+    {
+        if (IsLevelUpSuccessful(Upgrades.MaxHealth)) MaxHealthLevel++;
+        UpdateUi();
+    }
+
+    public void UpgradeButtonCurrencyGain()
+    {
+        if (IsLevelUpSuccessful(Upgrades.CurrencyGain)) CurrencyGainLevel++;
+        UpdateUi();
+    }
+
+    public void UpgradeButtonStartGold()
+    {
+        if (IsLevelUpSuccessful(Upgrades.StartGold)) StartGoldLevel++;
         UpdateUi();
     }
 

@@ -3,9 +3,11 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using PermaProg.PermaProgCode.Extensions;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Rooms;
 using BaseLib.Extensions;
 using BaseLib.Abstracts;
 using BaseLib.Utils;
@@ -20,7 +22,28 @@ public sealed class PpRelic : CustomRelicModel
 
     public override RelicRarity Rarity => RelicRarity.Starter;
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new BlockVar(1M, ValueProp.Unpowered)];
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+        [new BlockVar(1M, ValueProp.Unpowered), new PowerVar<StrengthPower>(1M), new PowerVar<DexterityPower>(1M)];
+
+    public override async Task AfterRoomEntered(AbstractRoom room)
+    {
+        if (room is not CombatRoom)
+            return;
+
+        if (PP.StrengthGainValue > 0)
+        {
+            Flash();
+            var strengthAmount = new PowerVar<StrengthPower>((decimal)PP.StrengthGainValue);
+            await PowerCmd.Apply<StrengthPower>(Owner.Creature, strengthAmount.BaseValue, Owner.Creature, null);
+        }
+
+        if (PP.DexterityGainValue > 0)
+        {
+            Flash();
+            var dexterityAmount = new PowerVar<DexterityPower>((decimal)PP.DexterityGainValue);
+            await PowerCmd.Apply<DexterityPower>(Owner.Creature, dexterityAmount.BaseValue, Owner.Creature, null);
+        }
+    }
 
     public override Task BeforeTurnEndVeryEarly(PlayerChoiceContext choiceContext, CombatSide side)
     {

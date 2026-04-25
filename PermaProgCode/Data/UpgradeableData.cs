@@ -8,8 +8,11 @@ public class UpgradeableData
 
     public readonly Dictionary<UpgradeableModel, string> All = new();
     public readonly UpgradeableModel CurrencyInterest = new();
+    public readonly UpgradeableModel DexterityGain = new();
+    public readonly UpgradeableModel UncommonRelic = new();
     public readonly UpgradeableModel CardUpgrades = new();
     public readonly UpgradeableModel CurrencyGain = new();
+    public readonly UpgradeableModel StrengthGain = new();
     public readonly UpgradeableModel CommonRelic = new();
     public readonly UpgradeableModel CardRarity = new();
     public readonly UpgradeableModel BlockGain = new();
@@ -20,8 +23,11 @@ public class UpgradeableData
     public UpgradeableData()
     {
         All.Add(CurrencyInterest, nameof(CurrencyInterest));
+        All.Add(DexterityGain, nameof(DexterityGain));
+        All.Add(UncommonRelic, nameof(UncommonRelic));
         All.Add(CardUpgrades, nameof(CardUpgrades));
         All.Add(CurrencyGain, nameof(CurrencyGain));
+        All.Add(StrengthGain, nameof(StrengthGain));
         All.Add(CommonRelic, nameof(CommonRelic));
         All.Add(CardRarity, nameof(CardRarity));
         All.Add(BlockGain, nameof(BlockGain));
@@ -81,13 +87,31 @@ public class UpgradeableData
         {
             CardRarity.MaxLevel = 5;
             CardRarity.Vals = [0, 20, 40, 60, 80, 100];
-            CardRarity.UpgCosts = [4000, 8000, 12000, 20000, 25000];
+            CardRarity.UpgCosts = [3000, 6000, 9000, 12000, 15000];
         }
 
         {
             CommonRelic.MaxLevel = 1;
             CommonRelic.Vals = [0, 1];
             CommonRelic.UpgCosts = [10000];
+        }
+
+        {
+            UncommonRelic.MaxLevel = 1;
+            UncommonRelic.Vals = [0, 1];
+            UncommonRelic.UpgCosts = [20000];
+        }
+
+        {
+            StrengthGain.MaxLevel = 3;
+            StrengthGain.Vals = [0, 1, 2, 3];
+            StrengthGain.UpgCosts = [7000, 21000, 63000];
+        }
+
+        {
+            DexterityGain.MaxLevel = 3;
+            DexterityGain.Vals = [0, 1, 2, 3];
+            DexterityGain.UpgCosts = [7000, 21000, 63000];
         }
 
         MF.Log.Info("Running sanity checks");
