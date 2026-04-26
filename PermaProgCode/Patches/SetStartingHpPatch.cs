@@ -9,6 +9,7 @@ public static class SetStartingHpPatch
 {
     private static void SetHp(CharacterModel __instance, ref int __result)
     {
+        PP.BaseHp = __result;
         if (PP.BalancingEnabled)
             __result = (int)(__result * 0.9);
 
