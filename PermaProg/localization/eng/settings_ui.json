@@ -16,6 +16,7 @@
   "PERMAPROG-CARD_RARITY_VALUE.title": "Card rarity chance:",
   "PERMAPROG-COMMON_RELIC_VALUE.title": "Start with random common relic:",
   "PERMAPROG-UNCOMMON_RELIC_VALUE.title": "Start with random uncommon relic:",
+  "PERMAPROG-RARE_RELIC_VALUE.title": "Start with random rare relic:",
   "PERMAPROG-STRENGTH_GAIN_VALUE.title": "Strength gained at combat start:",
   "PERMAPROG-DEXTERITY_GAIN_VALUE.title": "Dexterity gained at combat start:",
 
@@ -30,6 +31,7 @@
   "PERMAPROG-UPGRADE_BUTTON_CARD_RARITY.title": "Upgrade +20 %",
   "PERMAPROG-UPGRADE_BUTTON_COMMON_RELIC.title": "Unlock:",
   "PERMAPROG-UPGRADE_BUTTON_UNCOMMON_RELIC.title": "Unlock:",
+  "PERMAPROG-UPGRADE_BUTTON_RARE_RELIC.title": "Unlock:",
   "PERMAPROG-UPGRADE_BUTTON_STRENGTH_GAIN.title": "Upgrade +1 strength",
   "PERMAPROG-UPGRADE_BUTTON_DEXTERITY_GAIN.title": "Upgrade +1 dexterity",
 

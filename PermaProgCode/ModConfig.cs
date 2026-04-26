@@ -132,6 +132,7 @@ internal class PP : SimpleModConfig
                 break;
             default:
                 optionContainer.AddChild(CreateSectionHeader("Tier 5 upgrades"));
+                CreateUpgradeableUi(Upgrades.RareRelic, UpgradeButtonRareRelic, false, true);
                 optionContainer.AddChild(CreateSectionHeader("..some beings... ..are yet to... ..be created..."));
                 optionContainer.AddChild(CreateSectionHeader("(end of beta content)"));
                 break;
@@ -144,6 +145,9 @@ internal class PP : SimpleModConfig
 
     public static bool UncommonRelicValue { get; set; }
     public static int UncommonRelicLevel { get; set; }
+
+    public static bool RareRelicValue { get; set; }
+    public static int RareRelicLevel { get; set; }
 
     // Sliders
     [ConfigSlider(0.0, 1000.0, Format = "{0:0} gold")]
@@ -197,9 +201,21 @@ internal class PP : SimpleModConfig
         UpdateUi();
     }
 
+    public void UpgradeButtonRareRelic()
+    {
+        if (IsLevelUpSuccessful(Upgrades.RareRelic)) RareRelicLevel++;
+        UpdateUi();
+    }
+
     public void UpgradeButtonUncommonRelic()
     {
         if (IsLevelUpSuccessful(Upgrades.UncommonRelic)) UncommonRelicLevel++;
+        UpdateUi();
+    }
+
+    public void UpgradeButtonCommonRelic()
+    {
+        if (IsLevelUpSuccessful(Upgrades.CommonRelic)) CommonRelicLevel++;
         UpdateUi();
     }
 
@@ -212,12 +228,6 @@ internal class PP : SimpleModConfig
     public void UpgradeButtonStrengthGain()
     {
         if (IsLevelUpSuccessful(Upgrades.StrengthGain)) StrengthGainLevel++;
-        UpdateUi();
-    }
-
-    public void UpgradeButtonCommonRelic()
-    {
-        if (IsLevelUpSuccessful(Upgrades.CommonRelic)) CommonRelicLevel++;
         UpdateUi();
     }
 

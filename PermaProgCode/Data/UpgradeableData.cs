@@ -18,6 +18,7 @@ public class UpgradeableData
     public readonly UpgradeableModel CardRarity = new();
     public readonly UpgradeableModel BlockGain = new();
     public readonly UpgradeableModel MaxHealth = new();
+    public readonly UpgradeableModel RareRelic = new();
     public readonly UpgradeableModel StartGold = new();
     public readonly UpgradeableModel GoldGain = new();
 
@@ -34,6 +35,7 @@ public class UpgradeableData
         All.Add(CardRarity, nameof(CardRarity));
         All.Add(BlockGain, nameof(BlockGain));
         All.Add(MaxHealth, nameof(MaxHealth));
+        All.Add(RareRelic, nameof(RareRelic));
         All.Add(StartGold, nameof(StartGold));
         All.Add(GoldGain, nameof(GoldGain));
 
@@ -108,6 +110,12 @@ public class UpgradeableData
             UncommonRelic.MaxLevel = 1;
             UncommonRelic.Vals = [0, 1];
             UncommonRelic.UpgCosts = [20000];
+        }
+
+        {
+            RareRelic.MaxLevel = 1;
+            RareRelic.Vals = [0, 1];
+            RareRelic.UpgCosts = [30000];
         }
 
         {

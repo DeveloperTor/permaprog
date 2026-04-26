@@ -77,22 +77,34 @@ public static class PlayerPatches
         ppRelic.FloorAddedToDeck = 1;
         __instance.AddRelicInternal(ppRelic, silent: true);
 
-        if (!PP.CommonRelicValue) return;
+        if (PP.CommonRelicValue)
+        {
+            var allCommonRelics = ModelDb.RelicPool<SharedRelicPool>().GetUnlockedRelics(__instance.UnlockState)
+                .Where(relic => relic.Rarity == RelicRarity.Common).ToList();
+            var randomCommonRelicToAdd = allCommonRelics[new Random().Next(allCommonRelics.Count)].ToMutable();
+            MF.Log.Info($"Adding random common relic ({randomCommonRelicToAdd})");
+            randomCommonRelicToAdd.FloorAddedToDeck = 1;
+            __instance.AddRelicInternal(randomCommonRelicToAdd, silent: true);
+        }
 
-        var allCommonRelics = ModelDb.RelicPool<SharedRelicPool>().GetUnlockedRelics(__instance.UnlockState)
-            .Where(relic => relic.Rarity == RelicRarity.Common).ToList();
-        var randomCommonRelicToAdd = allCommonRelics[new Random().Next(allCommonRelics.Count)].ToMutable();
-        MF.Log.Info($"Adding random common relic ({randomCommonRelicToAdd})");
-        randomCommonRelicToAdd.FloorAddedToDeck = 1;
-        __instance.AddRelicInternal(randomCommonRelicToAdd, silent: true);
+        if (PP.UncommonRelicValue)
+        {
+            var allUncommonRelics = ModelDb.RelicPool<SharedRelicPool>().GetUnlockedRelics(__instance.UnlockState)
+                .Where(relic => relic.Rarity == RelicRarity.Uncommon).ToList();
+            var randomUncommonRelicToAdd = allUncommonRelics[new Random().Next(allUncommonRelics.Count)].ToMutable();
+            MF.Log.Info($"Adding random uncommon relic ({randomUncommonRelicToAdd})");
+            randomUncommonRelicToAdd.FloorAddedToDeck = 1;
+            __instance.AddRelicInternal(randomUncommonRelicToAdd, silent: true);
+        }
 
-        if (!PP.UncommonRelicValue) return;
-
-        var allUncommonRelics = ModelDb.RelicPool<SharedRelicPool>().GetUnlockedRelics(__instance.UnlockState)
-            .Where(relic => relic.Rarity == RelicRarity.Uncommon).ToList();
-        var randomUncommonRelicToAdd = allUncommonRelics[new Random().Next(allUncommonRelics.Count)].ToMutable();
-        MF.Log.Info($"Adding random uncommon relic ({randomUncommonRelicToAdd})");
-        randomUncommonRelicToAdd.FloorAddedToDeck = 1;
-        __instance.AddRelicInternal(randomUncommonRelicToAdd, silent: true);
+        if (PP.RareRelicValue)
+        {
+            var allRareRelics = ModelDb.RelicPool<SharedRelicPool>().GetUnlockedRelics(__instance.UnlockState)
+                .Where(relic => relic.Rarity == RelicRarity.Rare).ToList();
+            var randomRareRelicToAdd = allRareRelics[new Random().Next(allRareRelics.Count)].ToMutable();
+            MF.Log.Info($"Adding random rare relic ({randomRareRelicToAdd})");
+            randomRareRelicToAdd.FloorAddedToDeck = 1;
+            __instance.AddRelicInternal(randomRareRelicToAdd, silent: true);
+        }
     }
 }
