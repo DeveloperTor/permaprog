@@ -58,6 +58,15 @@ public static class PermaProgPatches
         SaveCurrency();
     }
 
+    [HarmonyPatch(typeof(AbstractRoom), "Enter")]
+    [HarmonyPostfix]
+    public static void OnRoomEnter(AbstractRoom __instance)
+    {
+        MF.Log.Info("Adding via 'OnRoomEnter'");
+        PP.CurrencyToGain += (int)PP.TravelCurrencyValue;
+        SaveCurrency();
+    }
+
     [HarmonyPatch(typeof(AchievementsHelper), "AfterRunEnded")]
     [HarmonyPrefix]
     public static void SaveDataAtEndOfRun(RunState state, Player player, bool isVictory)
@@ -72,7 +81,7 @@ public static class PermaProgPatches
 
     [HarmonyPatch(typeof(NGameOverScreen), "AddScoreLine")]
     [HarmonyPrefix]
-    public static void ChangeGoldAmountToCurrencyAmount(string locEntryKey, string? locAmountKey, ref int amount, string? iconPath)
+    public static void ChangeGoldToCurrency(string locEntryKey, string? locAmountKey, ref int amount, string? iconPath)
     {
         if (locEntryKey != "SCORE_LINE.goldGained") return;
         MF.Log.Info($"Exchange end-of-run gold ({amount}) to currency gained ({PP.TotalCurrencyGainedDuringRun})");
@@ -133,11 +142,12 @@ public static class PermaProgPatches
     private static void SaveCurrency()
     {
         PP.TotalCurrencyGainedDuringRun += PP.CurrencyToGain;
-        MF.Log.Info($"Add currency reward ({PP.CurrencyToGain}) to available currency and to " +
-                    $"total currency gained during run (result: {PP.TotalCurrencyGainedDuringRun})");
+        MF.Log.Info($"Add currency ({PP.CurrencyToGain}) to available and " +
+                    $"total gained ({PP.TotalCurrencyGainedDuringRun})");
         PP.CurrencyGainedLastRunText = PP.TotalCurrencyGainedDuringRun.ToString();
         PP.CurrencyAvailable += PP.CurrencyToGain;
         PP.CurrencyToGain = 0;
+        MF.CurrencyLabel?.SetTextAutoSize(PP.CurrencyAvailable.ToString().PadLeft(7));
         ModConfig.SaveDebounced<PP>();
     }
 }

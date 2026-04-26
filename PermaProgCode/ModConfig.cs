@@ -43,6 +43,7 @@ internal class PP : SimpleModConfig
         CreateUpgradeableUi(Upgrades.StartGold, UpgradeButtonStartGold);
         CreateUpgradeableUi(Upgrades.CurrencyGain, UpgradeButtonCurrencyGain);
         CreateUpgradeableUi(Upgrades.MaxHealth, UpgradeButtonMaxHealth);
+        CreateUpgradeableUi(Upgrades.TravelCurrency, UpgradeButtonTravelCurrency);
 
         UpdateCurrentValues();
         Tier2Upgrades(optionContainer);
@@ -185,7 +186,17 @@ internal class PP : SimpleModConfig
     public static double DexterityGainValue { get; set; }
     public static int DexterityGainLevel { get; set; }
 
+    [ConfigSlider(0.0, 1000.0, Format = "{0:0} ₵")]
+    public static double TravelCurrencyValue { get; set; }
+    public static int TravelCurrencyLevel { get; set; }
+
     // Buttons
+    public void UpgradeButtonTravelCurrency()
+    {
+        if (IsLevelUpSuccessful(Upgrades.TravelCurrency)) TravelCurrencyLevel++;
+        UpdateUi();
+    }
+
     public void UpgradeButtonUncommonRelic()
     {
         if (IsLevelUpSuccessful(Upgrades.UncommonRelic)) UncommonRelicLevel++;
