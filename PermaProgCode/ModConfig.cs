@@ -41,7 +41,7 @@ internal class PP : SimpleModConfig
 
         _optionContainer.AddChild(CreateSectionHeader("Tier 1 upgrades"));
         CreateUpgradeableUi(Upgrades.StartGold, UpgradeButtonStartGold);
-        CreateUpgradeableUi(Upgrades.CurrencyGain, UpgradeButtonCurrencyGain);
+        CreateUpgradeableUi(Upgrades.CurrencyGain, UpgradeButtonCurrencyGain, true);
         CreateUpgradeableUi(Upgrades.MaxHealth, UpgradeButtonMaxHealth);
         CreateUpgradeableUi(Upgrades.TravelCurrency, UpgradeButtonTravelCurrency);
 
