@@ -34,10 +34,12 @@ public sealed class PpRelic : CustomRelicModel
         {
             Flash();
             var strengthAmount = new PowerVar<StrengthPower>((decimal)PP.StrengthGainValue);
-            await PowerCmd.Apply<StrengthPower>(Owner.Creature, strengthAmount.BaseValue, Owner.Creature, null);
+            await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Owner.Creature,
+                strengthAmount.BaseValue, Owner.Creature, null);
             if (osty != null)
             {
-                await PowerCmd.Apply<StrengthPower>(osty, strengthAmount.BaseValue, osty, null);
+                await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), osty,
+                    strengthAmount.BaseValue, osty, null);
             }
         }
 
@@ -45,10 +47,12 @@ public sealed class PpRelic : CustomRelicModel
         {
             Flash();
             var dexterityAmount = new PowerVar<DexterityPower>((decimal)PP.DexterityGainValue);
-            await PowerCmd.Apply<DexterityPower>(Owner.Creature, dexterityAmount.BaseValue, Owner.Creature, null);
+            await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), Owner.Creature,
+                dexterityAmount.BaseValue, Owner.Creature, null);
             if (osty != null)
             {
-                await PowerCmd.Apply<DexterityPower>(osty, dexterityAmount.BaseValue, osty, null);
+                await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), osty,
+                    dexterityAmount.BaseValue, osty, null);
             }
         }
     }
@@ -74,8 +78,10 @@ public sealed class PpRelic : CustomRelicModel
         }
     }
 
-    public override Task BeforeSideTurnStart(PlayerChoiceContext choiceContext, CombatSide side,
-        CombatState combatState)
+    public override Task BeforeSideTurnStart(
+        PlayerChoiceContext choiceContext,
+        CombatSide side,
+        ICombatState combatState)
     {
         ShouldTrigger = false;
         return Task.CompletedTask;
