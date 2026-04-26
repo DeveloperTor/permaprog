@@ -29,7 +29,7 @@ public partial class MF : Node
     {
         // Have to update manually each release until I figure out an automatic way to get value from the JSON file
         var gameReleaseInfo = ReleaseInfoManager.Instance.ReleaseInfo;
-        var modVersion = Assembly.GetExecutingAssembly().GetName().Version = new Version(0, 5, 4);
+        var modVersion = Assembly.GetExecutingAssembly().GetName().Version = new Version(0, 6, 0);
         Log.Info($"Game version: {gameReleaseInfo?.Version}, branch: {gameReleaseInfo?.Branch}");
         Log.Info("Mod version: " + modVersion);
 
