@@ -355,4 +355,20 @@ internal class PP : SimpleModConfig
             upg.CurrentLevel = (int)(propertyInfo.GetValue(Upgrades) ?? throw new InvalidOperationException());
         }
     }
+
+    public static int BaseHp;
+    public static int BaseGold;
+
+    public static void UpdateCharacterSelectHpGold(object? sender, EventArgs e)
+    {
+        var hp = BaseHp;
+        if (BalancingEnabled) hp = (int)(hp * 0.9);
+        var hpText = (hp + (int)MaxHealthValue).ToString();
+        MF.HpRefLabel?.SetTextAutoSize(hpText + "/" + hpText);
+
+        var gold = BaseGold;
+        if (BalancingEnabled) gold = 0;
+        var goldText = (gold + (int)StartGoldValue).ToString();
+        MF.GoldRefLabel?.SetTextAutoSize(goldText);
+    }
 }

@@ -22,6 +22,8 @@ public partial class MF : Node
     private static SceneTree? _tree;
 
     public static MegaLabel? CurrencyLabel;
+    public static MegaLabel? HpRefLabel;
+    public static MegaLabel? GoldRefLabel;
 
     public static void Initialize()
     {
@@ -34,6 +36,7 @@ public partial class MF : Node
         var pp = new PP();
         ModConfigRegistry.Register(ModId, pp);
         pp.InitUpgradeablesCurrentLevel();
+        pp.ConfigChanged += PP.UpdateCharacterSelectHpGold;
 
         new Harmony(ModId).PatchAll();
 
@@ -62,7 +65,7 @@ public partial class MF : Node
 
             if (node.Name == "CharacterSelectScreen")
             {
-                node.AddChildSafely(new EnterShopButtonUi());
+                HandleCharacterSelectScreen(node);
             }
         }
         catch (Exception e)
@@ -82,5 +85,14 @@ public partial class MF : Node
         CurrencyLabel = labelCopy;
         topBarGold.AddChildSafely(labelCopy);
         topBarGold.MoveChild(labelCopy, 0);
+    }
+
+    private static void HandleCharacterSelectScreen(Node node)
+    {
+        node.AddChildSafely(new EnterShopButtonUi());
+
+        var hpGold = node.GetNode("InfoPanel").GetChild(1).GetNode("HpGoldSpacer").GetChild(0);
+        HpRefLabel = (MegaLabel)hpGold.GetNode("Hp").GetNode("Label");
+        GoldRefLabel = (MegaLabel)hpGold.GetNode("Gold").GetNode("Label");
     }
 }

@@ -1,6 +1,7 @@
 ﻿using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.addons.mega_text;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Assets;
 using BaseLib.Config.UI;
 using Godot;
@@ -11,11 +12,15 @@ public partial class EnterShopButtonUi : NButton
 {
     private MegaLabel? _label;
     private NMainMenu? _mainMenu;
+    private Button? _button;
+    private Tween? _tween;
 
     public override void _Ready()
     {
         var font = PreloadManager.Cache.GetAsset<Font>("res://themes/kreon_bold_shared.tres");
         _mainMenu = GetNode<NMainMenu>("/root/Game/RootSceneContainer/MainMenu");
+        _tween = CreateTween();
+        _tween.TweenProperty(this, "scale", Vector2.One, 0.5f); // To avoid an error print when killed without tweener
 
         _label = new MegaLabel();
         _label.Name = "EnterShopLabel";
@@ -28,18 +33,36 @@ public partial class EnterShopButtonUi : NButton
         _label.AddThemeFontOverride(ThemeConstants.Label.Font, font);
         _label.SetTextAutoSize("PermaProg Shop");
 
-        var btn = new Button();
-        btn.Size = new Vector2(240, 50);
-        btn.AddChild(_label);
-        (btn.GetChild(0) as MegaLabel)!.Position = new Vector2(10, 4);
-        btn.Pressed += OpenModMenu;
-        AddChild(btn);
+        _button = new Button();
+        _button.AddChild(_label);
+        _button.Size = new Vector2(240, 50);
+        (_button.GetChild(0) as MegaLabel)!.Position = new Vector2(10, 4);
+        _button.Pressed += OpenModMenu;
+        _button.MouseEntered += OnHover;
+        _button.MouseExited += OnUnhover;
+        AddChild(_button);
 
+        PivotOffset = new Vector2(120, 25);
         GlobalPosition = new Vector2(840, 1023);
     }
 
     private void OpenModMenu()
     {
         _mainMenu?.SubmenuStack.PushSubmenuType<NModConfigSubmenu>();
+    }
+
+    private void OnHover()
+    {
+        _tween?.Kill();
+        Scale = new Vector2(1.1f, 1.1f);
+        SfxCmd.Play("event:/sfx/ui/clicks/ui_hover");
+    }
+
+    private void OnUnhover()
+    {
+        _tween?.Kill();
+        _tween = CreateTween().SetParallel();
+        _tween.SetEase(Tween.EaseType.Out).SetTrans(Tween.TransitionType.Expo);
+        _tween.TweenProperty(this, "scale", Vector2.One, 0.5f);
     }
 }

@@ -9,6 +9,7 @@ public static class SetStartingGold
 {
     private static void SetGold(CharacterModel __instance, ref int __result)
     {
+        PP.BaseGold = __result;
         if (PP.BalancingEnabled)
             __result = 0;
 
