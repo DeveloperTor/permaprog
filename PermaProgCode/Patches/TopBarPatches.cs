@@ -2,6 +2,7 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
+using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Nodes.HoverTips;
 using MegaCrit.sts2.Core.Nodes.TopBar;
 
@@ -17,16 +18,23 @@ public class TopBarPatches
         var hoverTip = AddCustomHoverTip("PERMAPROG-CURRENCY_LABEL.hover.title", "PERMAPROG-CURRENCY_LABEL.hover.desc");
         if (MF.CurrencyLabel == null) return;
         var andShow = NHoverTipSet.CreateAndShow(MF.CurrencyLabel, hoverTip);
-        andShow.GlobalPosition = __instance.GlobalPosition + new Vector2(0.0f, __instance.Size.Y + 165f);
+        if (andShow != null)
+        {
+            andShow.GlobalPosition = __instance.GlobalPosition + new Vector2(0.0f, __instance.Size.Y + 165f);
 
-        try
-        {
-            (andShow.GetChild(0).GetChild(0).GetChild(2).GetChild(0).GetChild(0) as Control)!.Modulate =
-                Colors.GreenYellow;
+            try
+            {
+                (andShow.GetChild(0).GetChild(0).GetChild(2).GetChild(0).GetChild(0) as Control)!.Modulate =
+                    Colors.GreenYellow;
+            }
+            catch (Exception e)
+            {
+                MF.Log.Warn("Could not set CurrencyLabel title to green: " + e);
+            }
         }
-        catch (Exception e)
+        else
         {
-            MF.Log.Warn("Could not set CurrencyLabel title to green: " + e);
+            Log.Info("Failed to create hoverTip for currency label");
         }
     }
 

@@ -34,14 +34,16 @@ public sealed class PpRelic : CustomRelicModel
         {
             Flash();
             var strengthAmount = new PowerVar<StrengthPower>((decimal)PP.StrengthGainValue);
-            await PowerCmd.Apply<StrengthPower>(Owner.Creature, strengthAmount.BaseValue, Owner.Creature, null);
+            await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Owner.Creature,
+                strengthAmount.BaseValue, Owner.Creature, null);
         }
 
         if (PP.DexterityGainValue > 0)
         {
             Flash();
             var dexterityAmount = new PowerVar<DexterityPower>((decimal)PP.DexterityGainValue);
-            await PowerCmd.Apply<DexterityPower>(Owner.Creature, dexterityAmount.BaseValue, Owner.Creature, null);
+            await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), Owner.Creature,
+                dexterityAmount.BaseValue, Owner.Creature, null);
         }
     }
 
@@ -66,8 +68,10 @@ public sealed class PpRelic : CustomRelicModel
         }
     }
 
-    public override Task BeforeSideTurnStart(PlayerChoiceContext choiceContext, CombatSide side,
-        CombatState combatState)
+    public override Task BeforeSideTurnStart(
+        PlayerChoiceContext choiceContext,
+        CombatSide side,
+        ICombatState combatState)
     {
         ShouldTrigger = false;
         return Task.CompletedTask;
