@@ -3,13 +3,12 @@ using MegaCrit.Sts2.addons.mega_text;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Logging;
+using PermaProg.PermaProgCode.UI;
 using MegaCrit.Sts2.Core.Debug;
 using System.Reflection;
 using BaseLib.Config;
-using BaseLib.Extensions;
 using HarmonyLib;
 using Godot;
-using PermaProg.PermaProgCode.UI;
 
 namespace PermaProg.PermaProgCode;
 
@@ -63,59 +62,13 @@ public partial class MF : Node
 
             if (node.Name == "CharacterSelectScreen")
             {
-                CharacterSelectThings(node);
+                node.AddChildSafely(new EnterShopButtonUi());
             }
         }
         catch (Exception e)
         {
-            Log.Warn("Error finding node tree, Currency Label might not work: " + e);
+            Log.Warn("Error finding node tree: " + e);
         }
-    }
-
-    private static void CharacterSelectThings(Node node)
-    {
-        GD.Print("CharacterSelectScreen:");
-        foreach (var VARIABLE in node.GetChildren())
-        {
-            GD.Print(VARIABLE.Name);
-        }
-
-        // var label = new MegaLabel();
-        // label.MinFontSize = 40;
-        // label.SetTextAutoSize("HEYO");
-        //
-        // var control = new Control();
-        // control.AddChild(label);
-
-        var enterShopButton = new EnterShopButtonUi();
-        node.AddChildSafely(enterShopButton);
-        enterShopButton.GlobalPosition = new Vector2(200, 200);
-
-
-        GD.Print("CharSelectButtons:");
-        var CharSelectButtons =  node.GetNode("CharSelectButtons");
-        foreach (var VARIABLE in CharSelectButtons.GetChildren())
-        {
-            GD.Print(VARIABLE.Name);
-        }
-
-        GD.Print("ButtonContainer:");
-        var ButtonContainer =  CharSelectButtons.GetNode("ButtonContainer");
-        foreach (var VARIABLE in ButtonContainer.GetChildren())
-        {
-            GD.Print(VARIABLE.Name);
-        }
-
-        GD.Print("CharSelectButton:");
-        var CharSelectButton =  ButtonContainer.GetNode("CharSelectButton").Duplicate();
-        foreach (var VARIABLE in CharSelectButton.GetChildren())
-        {
-            GD.Print(VARIABLE.Name);
-        }
-
-        // CharSelectButton.Name = "ButtonCOPY";
-        // ButtonContainer.AddChild(CharSelectButton);
-        // ButtonContainer.MoveChild(CharSelectButton, 1);
     }
 
     private static void AddCurrencyLabel(Node node)
