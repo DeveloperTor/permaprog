@@ -32,6 +32,7 @@ public partial class MF : Node
         var modVersion = Assembly.GetExecutingAssembly().GetName().Version = new Version(0, 6, 1);
         Log.Info($"Game version: {gameReleaseInfo?.Version}, branch: {gameReleaseInfo?.Branch}");
         Log.Info("Mod version: " + modVersion);
+        Log.Info("Beta branch version");
 
         var pp = new PP();
         ModConfigRegistry.Register(ModId, pp);
