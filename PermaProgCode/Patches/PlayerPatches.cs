@@ -2,6 +2,7 @@ using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using PermaProg.PermaProgCode.Relics;
+using MegaCrit.Sts2.Core.Unlocks;
 using MegaCrit.Sts2.Core.Models;
 using BaseLib.Config;
 using HarmonyLib;
@@ -11,13 +12,12 @@ namespace PermaProg.PermaProgCode.Patches;
 [HarmonyPatch]
 public static class PlayerPatches
 {
-    [HarmonyPatch(typeof(Player), "PopulateStartingInventory")]
+    [HarmonyPatch(typeof(Player), "CreateForNewRun", [typeof(CharacterModel), typeof(UnlockState), typeof(ulong)])]
     [HarmonyPrefix]
     public static void StartNewRun(Player __instance)
     {
         MF.Log.Info("Starting new run");
-        MF.Log.Info("Setting RunOngoing to true");
-        PP.RunOngoing = true;
+        PP.RunOngoing = false;
 
         foreach (var upg in PP.Upgrades.All.Keys.Where(upg => upg.CurrentLevel > 0))
         {
@@ -26,6 +26,14 @@ public static class PlayerPatches
 
         PP.TotalCurrencyGainedDuringRun = 0;
         ModConfig.SaveDebounced<PP>();
+    }
+
+    [HarmonyPatch(typeof(Player), "CreateForNewRun", [typeof(CharacterModel), typeof(UnlockState), typeof(ulong)])]
+    [HarmonyPostfix]
+    public static void SetRunOngoing(Player __instance)
+    {
+        MF.Log.Info("Setting RunOngoing to true");
+        PP.RunOngoing = true;
     }
 
     [HarmonyPatch(typeof(Player), "PopulateStartingDeck")]
