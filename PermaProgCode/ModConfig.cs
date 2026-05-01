@@ -13,6 +13,7 @@ internal class PP : SimpleModConfig
     private static Control? _optionContainer;
     [ConfigIgnore] public static UpgradeableData Upgrades { get; } = new();
     [ConfigIgnore] public static int CurrencyToGain { get; set; }
+    [ConfigIgnore] public static int CurrentRunAscensionLevel { get; set; }
     [ConfigIgnore] public static bool RunOngoing { get; set; }
     [ConfigHideInUI] public static int TotalCurrencyGainedDuringRun { get; set; }
     [ConfigHideInUI] public static int CurrencyAvailable { get; set; }
@@ -65,6 +66,7 @@ internal class PP : SimpleModConfig
             optionContainer.AddChild(CreateSectionHeader("..some beings... ..are yet to... ..be revealed..."));
             optionContainer.AddChild(CreateSectionHeader("???"));
 
+            Upgrades.AscensionCurrency.Unlocked = false;
             Upgrades.CurrencyInterest.Unlocked = false;
             Upgrades.DexterityGain.Unlocked = false;
             Upgrades.UncommonRelic.Unlocked = false;
@@ -73,14 +75,16 @@ internal class PP : SimpleModConfig
             Upgrades.CommonRelic.Unlocked = false;
             Upgrades.CardRarity.Unlocked = false;
             Upgrades.BlockGain.Unlocked = false;
+            Upgrades.RareRelic.Unlocked = false;
             Upgrades.GoldGain.Unlocked = false;
         }
         else
         {
             optionContainer.AddChild(CreateSectionHeader("Tier 2 upgrades"));
-            CreateUpgradeableUi(Upgrades.CurrencyInterest, UpgradeButtonCurrencyInterest, true);
             CreateUpgradeableUi(Upgrades.GoldGain, UpgradeButtonGoldGain, true);
+            CreateUpgradeableUi(Upgrades.AscensionCurrency, UpgradeButtonAscensionCurrency);
             CreateUpgradeableUi(Upgrades.CardUpgrades, UpgradeButtonCardUpgrades);
+            CreateUpgradeableUi(Upgrades.CurrencyInterest, UpgradeButtonCurrencyInterest, true);
         }
     }
 
@@ -202,7 +206,16 @@ internal class PP : SimpleModConfig
     public static double TravelCurrencyValue { get; set; }
     public static int TravelCurrencyLevel { get; set; }
 
+    [ConfigSlider(0.0, 1000.0, Format = "{0:0} %")]
+    public static double AscensionCurrencyValue { get; set; }
+    public static int AscensionCurrencyLevel { get; set; }
+
     // Buttons
+    public void UpgradeButtonAscensionCurrency()
+    {
+        if (IsLevelUpSuccessful(Upgrades.AscensionCurrency)) AscensionCurrencyLevel++;
+        UpdateUi();
+    }
     public void UpgradeButtonTravelCurrency()
     {
         if (IsLevelUpSuccessful(Upgrades.TravelCurrency)) TravelCurrencyLevel++;

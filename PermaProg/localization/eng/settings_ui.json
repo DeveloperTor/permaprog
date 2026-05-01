@@ -21,6 +21,7 @@
   "PERMAPROG-RARE_RELIC_VALUE.title": "Start with random rare relic:",
   "PERMAPROG-STRENGTH_GAIN_VALUE.title": "Strength gained at combat start:",
   "PERMAPROG-DEXTERITY_GAIN_VALUE.title": "Dexterity gained at combat start:",
+  "PERMAPROG-ASCENSION_CURRENCY_VALUE.title": "Currency gained per ascension level:",
 
   "PERMAPROG-UPGRADE_BUTTON_START_GOLD.title": "Upgrade +20 gold",
   "PERMAPROG-UPGRADE_BUTTON_CURRENCY_GAIN.title": "Upgrade +10 %",
@@ -36,6 +37,7 @@
   "PERMAPROG-UPGRADE_BUTTON_RARE_RELIC.title": "Unlock:",
   "PERMAPROG-UPGRADE_BUTTON_STRENGTH_GAIN.title": "Upgrade +1 strength",
   "PERMAPROG-UPGRADE_BUTTON_DEXTERITY_GAIN.title": "Upgrade +1 dexterity",
+  "PERMAPROG-UPGRADE_BUTTON_ASCENSION_CURRENCY.title": "Upgrade +2 %",
 
   "PERMAPROG-CURRENCY_TEXT.hover.title": "Currency",
   "PERMAPROG-CURRENCY_TEXT.hover.desc": "Currency is earned by gaining gold during a run",

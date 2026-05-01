@@ -7,6 +7,7 @@ public class UpgradeableData
     public int TotalCurrentLevels;
 
     public readonly Dictionary<UpgradeableModel, string> All = new();
+    public readonly UpgradeableModel AscensionCurrency = new();
     public readonly UpgradeableModel CurrencyInterest = new();
     public readonly UpgradeableModel TravelCurrency = new();
     public readonly UpgradeableModel DexterityGain = new();
@@ -24,6 +25,7 @@ public class UpgradeableData
 
     public UpgradeableData()
     {
+        All.Add(AscensionCurrency, nameof(AscensionCurrency));
         All.Add(CurrencyInterest, nameof(CurrencyInterest));
         All.Add(TravelCurrency, nameof(TravelCurrency));
         All.Add(DexterityGain, nameof(DexterityGain));
@@ -130,6 +132,11 @@ public class UpgradeableData
             DexterityGain.UpgCosts = [7000, 21000, 63000];
         }
 
+        {
+            AscensionCurrency.MaxLevel = 5;
+            AscensionCurrency.Vals = [0, 2, 4, 6, 8, 10];
+            AscensionCurrency.UpgCosts = [0, 800, 1600, 2400, 3200];
+        }
 
         MF.Log.Info("Running sanity checks");
         foreach (var upg in All.Keys.Where(upg =>

@@ -19,6 +19,13 @@ namespace PermaProg.PermaProgCode.Patches;
 [HarmonyPatch]
 public static class PermaProgPatches
 {
+    [HarmonyPatch(typeof(RunState), "CreateForNewRun")]
+    [HarmonyPostfix]
+    public static void CreateForNewRun(RunState __result)
+    {
+        PP.CurrentRunAscensionLevel = __result.AscensionLevel;
+    }
+
     [HarmonyPatch(typeof(GoldReward), MethodType.Constructor, [typeof(int), typeof(int), typeof(Player), typeof(bool)])]
     [HarmonyPrefix]
     public static void IncreaseGoldRewardDuringRun(ref int min, ref int max, Player player)
@@ -41,11 +48,11 @@ public static class PermaProgPatches
     [HarmonyPrefix]
     public static void GainCurrencyDuringRun(decimal amount, Player player, bool wasStolenBack)
     {
-        var currencyGained = (double)amount * (1.0 + PP.CurrencyGainValue / 100.0);
-        MF.Log.Info($"Currency to gain: {(int)currencyGained} from {amount} gold " +
-                    $"with multiplier {1.0 + PP.CurrencyGainValue / 100.0}");
-        PP.CurrencyToGain += (int)currencyGained;
-        MF.Log.Info("Updating top bar currency label");
+        var multiplier = 1.0 + PP.CurrencyGainValue / 100.0;
+        multiplier += PP.CurrentRunAscensionLevel * PP.AscensionCurrencyValue / 100.0;
+        MF.Log.Info($"Currency to gain: {(int)((double)amount * multiplier)} from {amount} gold " +
+                    $"with multiplier {multiplier.ToString()[..4]}");
+        PP.CurrencyToGain += (int)((double)amount * multiplier);
         MF.CurrencyLabel?.SetTextAutoSize((PP.CurrencyAvailable + PP.CurrencyToGain).ToString().PadLeft(7));
     }
 
