@@ -51,7 +51,7 @@ public static class PermaProgPatches
         var multiplier = 1.0 + PP.CurrencyGainValue / 100.0;
         multiplier += PP.CurrentRunAscensionLevel * PP.AscensionCurrencyValue / 100.0;
         MF.Log.Info($"Currency to gain: {(int)((double)amount * multiplier)} from {amount} gold " +
-                    $"with multiplier {multiplier.ToString()[..4]}");
+                    $"with multiplier {Math.Round(multiplier, 2)}");
         PP.CurrencyToGain += (int)((double)amount * multiplier);
         MF.CurrencyLabel?.SetTextAutoSize((PP.CurrencyAvailable + PP.CurrencyToGain).ToString().PadLeft(7));
     }
@@ -69,6 +69,7 @@ public static class PermaProgPatches
     [HarmonyPostfix]
     public static void OnRoomEnter(AbstractRoom __instance)
     {
+        if (PP.TravelCurrencyValue <= 0.1) return;
         MF.Log.Info("Adding via 'OnRoomEnter'");
         PP.CurrencyToGain += (int)PP.TravelCurrencyValue;
         SaveCurrency();
