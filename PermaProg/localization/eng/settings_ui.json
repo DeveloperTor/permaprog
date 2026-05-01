@@ -4,6 +4,8 @@
   "PERMAPROG-BALANCING_ENABLED.title": "Enable balancing (recommended on)",
   "PERMAPROG-CURRENCY_TEXT.title": "Currency available to spend:",
   "PERMAPROG-CURRENCY_GAINED_LAST_RUN_TEXT.title": "Currency gained last run:",
+  "PERMAPROG-GLOBAL_COST_MULTIPLIER.title": "Global cost multiplier (re-enter shop to apply):",
+  "PERMAPROG-GLOBAL_VALUE_MULTIPLIER.title": "Global max value multiplier (re-enter shop to apply):",
 
   "PERMAPROG-START_GOLD_VALUE.title": "Starting gold:",
   "PERMAPROG-CURRENCY_GAIN_VALUE.title": "Currency gained:",

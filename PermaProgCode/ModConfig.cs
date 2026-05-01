@@ -31,6 +31,8 @@ internal class PP : SimpleModConfig
             MF.Log.Info("Showing debug menu");
             AddRestoreDefaultsButton(_optionContainer);
             _optionContainer.AddChild(CreateButton("Add gold (debug)", "+500", AddGold500));
+            _optionContainer.AddChild(CreateSliderOption(GetPropertyInfo(nameof(GlobalCostMultiplier))));
+            _optionContainer.AddChild(CreateSliderOption(GetPropertyInfo(nameof(GlobalValueMultiplier))));
             _optionContainer.AddChild(CreateDividerControl());
         }
 
@@ -150,6 +152,12 @@ internal class PP : SimpleModConfig
     public static int RareRelicLevel { get; set; }
 
     // Sliders
+    [ConfigSlider(75.0, Format = "{0:0}%")]
+    public static double GlobalCostMultiplier { get; set; } = 100.0;
+
+    [ConfigSlider(100.0, 200.0, Format = "{0:0}%")]
+    public static double GlobalValueMultiplier { get; set; } = 100.0;
+
     [ConfigSlider(0.0, 1000.0, Format = "{0:0} gold")]
     public static double StartGoldValue { get; set; }
     public static int StartGoldLevel { get; set; }
@@ -328,7 +336,7 @@ internal class PP : SimpleModConfig
         if (sliderRow?.SettingControl is not NConfigSlider slider) return;
 
         IsArraySafe(upg, upg.Vals);
-        var maxSliderValue = upg.Vals[upg.CurrentLevel];
+        var maxSliderValue = upg.Vals[upg.CurrentLevel] * (GlobalValueMultiplier / 100.0);
         if (maxSliderValue <= 0)
         {
             slider.Visible = false;
@@ -360,16 +368,18 @@ internal class PP : SimpleModConfig
 
         IsArraySafe(upg, upg.UpgCosts);
         (button.GetChild(1) as Label)!.Text =
-            upg.UpgCosts[upg.CurrentLevel] <= 0 ? "Free!" : upg.UpgCosts[upg.CurrentLevel].ToString();
+            upg.UpgCosts[upg.CurrentLevel] <= 0
+                ? "Free!"
+                : ((int)(upg.UpgCosts[upg.CurrentLevel] * (GlobalCostMultiplier / 100))).ToString();
     }
 
     private bool IsLevelUpSuccessful(UpgradeableModel upg)
     {
         if (upg.CurrentLevel >= upg.MaxLevel) return false;
         if (!IsArraySafe(upg, upg.UpgCosts)) return false;
-        if (upg.UpgCosts[upg.CurrentLevel] > CurrencyAvailable) return false;
+        if (upg.UpgCosts[upg.CurrentLevel] * (GlobalCostMultiplier / 100) > CurrencyAvailable) return false;
 
-        CurrencyAvailable -= upg.UpgCosts[upg.CurrentLevel];
+        CurrencyAvailable -= (int)(upg.UpgCosts[upg.CurrentLevel] * (GlobalCostMultiplier / 100));
         upg.CurrentLevel++;
         MF.Log.Info($"Upgraded {upg.ValueName[..^"Value".Length]} to level {upg.CurrentLevel}");
         return true;
@@ -417,7 +427,7 @@ internal class PP : SimpleModConfig
         if (upg.CurrentLevel <= upgArray.Count - 1 || upg.CurrentLevel == 0) return true;
 
         MF.Log.Error($"{upg.CurrentLevelName}: Current level ({upg.CurrentLevel}) is higher than values " +
-                     $"available ({upgArray.Count - 1}). Lowering value to max level available. Bugs may occur");
+                     $"available ({upgArray.Count - 1}). Lowering value to max level available");
         upg.CurrentLevel = upgArray.Count - 1;
         GetPropertyInfo(upg.CurrentLevelName).SetValue(Upgrades, upg.CurrentLevel);
         return false;
