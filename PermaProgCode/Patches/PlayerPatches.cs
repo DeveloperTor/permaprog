@@ -36,45 +36,6 @@ public static class PlayerPatches
         PP.RunOngoing = true;
     }
 
-    [HarmonyPatch(typeof(Player), "PopulateStartingDeck")]
-    [HarmonyPostfix]
-    public static void UpgradeCards(Player __instance)
-    {
-        var cards = __instance.Deck.Cards;
-        var cardsToUpgrade = RandomlySelectedCards(cards, (int)PP.CardUpgradesValue, cards.Count);
-        var cardModels = cardsToUpgrade.ToList();
-
-        if (cardModels.Count == 0) return;
-
-        MF.Log.Info($"Upgrading {cardModels.Count} cards");
-        foreach (var card in cardModels.Where(card => card.IsUpgradable))
-        {
-            card.UpgradeInternal();
-            card.FinalizeUpgradeInternal();
-        }
-    }
-
-    // Ty Matthew Watson on StackOverflow
-    public static IEnumerable<T> RandomlySelectedCards<T>(IEnumerable<T> sequence, int count, int sequenceLength)
-    {
-        var rng = new Random();
-        var available = sequenceLength;
-        var remaining = count;
-
-        using var iterator = sequence.GetEnumerator();
-        for (var current = 0; current < sequenceLength; ++current)
-        {
-            iterator.MoveNext();
-            if (rng.NextDouble() < remaining / (double)available)
-            {
-                yield return iterator.Current;
-                --remaining;
-            }
-
-            --available;
-        }
-    }
-
     [HarmonyPatch(typeof(Player), "PopulateStartingRelics")]
     [HarmonyPostfix]
     public static void AddRelics(Player __instance)

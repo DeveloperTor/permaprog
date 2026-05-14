@@ -5,7 +5,10 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Achievements;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Rewards;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves;
 using MegaCrit.Sts2.Core.Odds;
@@ -21,9 +24,37 @@ public static class PermaProgPatches
 {
     [HarmonyPatch(typeof(RunState), "CreateForNewRun")]
     [HarmonyPostfix]
-    public static void CreateForNewRun(RunState __result)
+    public static void GetCurrentAscensionLevel(RunState __result)
     {
         PP.CurrentRunAscensionLevel = __result.AscensionLevel;
+    }
+
+    [HarmonyPatch(typeof(NActBanner), "Create")]
+    [HarmonyPostfix]
+    public static void UpgradeCardsWhenAct0BannerShows(ActModel act, int actIndex)
+    {
+        if (actIndex != 0) return;
+
+        try
+        {
+            var player = LocalContext.GetMe(RunManager.Instance.DebugOnlyGetState()?.Players!);
+            var cards = player!.Deck.Cards;
+            var cardsToUpgrade = RandomlySelectedCards(cards, (int)PP.CardUpgradesValue, cards.Count);
+            var cardModels = cardsToUpgrade.ToList();
+
+            if (cardModels.Count == 0) return;
+
+            MF.Log.Info($"Upgrading {cardModels.Count} cards");
+            foreach (var card in cardModels.Where(card => card.IsUpgradable))
+            {
+                card.UpgradeInternal();
+                card.FinalizeUpgradeInternal();
+            }
+        }
+        catch (Exception e)
+        {
+            MF.Log.Info("Could not get player, cards cannot be upgraded. Error: " + e);
+        }
     }
 
     [HarmonyPatch(typeof(GoldReward), MethodType.Constructor, [typeof(int), typeof(int), typeof(Player), typeof(bool)])]
@@ -129,6 +160,26 @@ public static class PermaProgPatches
     }
 
     // Helpers
+    public static IEnumerable<T> RandomlySelectedCards<T>(IEnumerable<T> sequence, int count, int sequenceLength)
+    {
+        var rng = new Random();
+        var available = sequenceLength;
+        var remaining = count;
+
+        using var iterator = sequence.GetEnumerator();
+        for (var current = 0; current < sequenceLength; ++current)
+        {
+            iterator.MoveNext();
+            if (rng.NextDouble() < remaining / (double)available)
+            {
+                yield return iterator.Current;
+                --remaining;
+            }
+
+            --available;
+        }
+    }
+
     private static void ApplyInterest(RunState state)
     {
         if (state.CurrentActIndex < 3 || PP.CurrencyInterestValue <= 0.1) return;
