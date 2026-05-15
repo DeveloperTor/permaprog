@@ -14,7 +14,7 @@
   "PERMAPROG-CARD_UPGRADES_VALUE.title": "Upgraded starting cards:",
   "PERMAPROG-CURRENCY_INTEREST_VALUE.title": "Currency interest:",
   "PERMAPROG-GOLD_GAIN_VALUE.title": "Gold gained after combat:",
-  "PERMAPROG-BLOCK_GAIN_VALUE.title": "Block gained at end of turn:",
+  "PERMAPROG-BLOCK_GAIN_VALUE.title": "Block gained at end of turn (singleplayer only):",
   "PERMAPROG-CARD_RARITY_VALUE.title": "Card rarity chance:",
   "PERMAPROG-COMMON_RELIC_VALUE.title": "Start with random common relic:",
   "PERMAPROG-UNCOMMON_RELIC_VALUE.title": "Start with random uncommon relic:",

@@ -14,7 +14,7 @@
   "PERMAPROG-CARD_UPGRADES_VALUE.title": "升级的起始卡牌：",
   "PERMAPROG-CURRENCY_INTEREST_VALUE.title": "货币利息：",
   "PERMAPROG-GOLD_GAIN_VALUE.title": "战斗后获得的金币：",
-  "PERMAPROG-BLOCK_GAIN_VALUE.title": "回合结束获得的格挡：",
+  "PERMAPROG-BLOCK_GAIN_VALUE.title": "回合结束获得的格挡（仅限单人游戏）：",
   "PERMAPROG-CARD_RARITY_VALUE.title": "卡牌稀有度概率：",
   "PERMAPROG-COMMON_RELIC_VALUE.title": "随机普通遗物起始：",
   "PERMAPROG-UNCOMMON_RELIC_VALUE.title": "随机非凡遗物起始：",

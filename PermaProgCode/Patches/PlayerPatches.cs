@@ -2,11 +2,11 @@ using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using PermaProg.PermaProgCode.Relics;
+using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Unlocks;
 using MegaCrit.Sts2.Core.Models;
 using BaseLib.Config;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Commands;
 
 namespace PermaProg.PermaProgCode.Patches;
 

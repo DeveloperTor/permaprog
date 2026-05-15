@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Rooms;
+using MegaCrit.Sts2.Core.Runs;
 using BaseLib.Extensions;
 using BaseLib.Abstracts;
 using BaseLib.Utils;
@@ -49,7 +50,7 @@ public sealed class PpRelic : CustomRelicModel
     {
         if (side != Owner.Creature.Side)
             return Task.CompletedTask;
-        ShouldTrigger = true;
+        ShouldTrigger = RunManager.Instance.IsSinglePlayerOrFakeMultiplayer; // It is broken in multiplayer
         return Task.CompletedTask;
     }
 
