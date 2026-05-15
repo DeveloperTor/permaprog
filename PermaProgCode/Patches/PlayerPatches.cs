@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Unlocks;
 using MegaCrit.Sts2.Core.Models;
 using BaseLib.Config;
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Commands;
 
 namespace PermaProg.PermaProgCode.Patches;
 
@@ -52,8 +53,7 @@ public static class PlayerPatches
                 .Where(relic => relic.Rarity == RelicRarity.Common).ToList();
             var randomCommonRelicToAdd = allCommonRelics[new Random().Next(allCommonRelics.Count)].ToMutable();
             MF.Log.Info($"Adding random common relic ({randomCommonRelicToAdd})");
-            randomCommonRelicToAdd.FloorAddedToDeck = 1;
-            __instance.AddRelicInternal(randomCommonRelicToAdd, silent: true);
+            RelicCmd.Obtain(randomCommonRelicToAdd, __instance);
         }
 
         if (PP.UncommonRelicValue)
@@ -62,8 +62,7 @@ public static class PlayerPatches
                 .Where(relic => relic.Rarity == RelicRarity.Uncommon).ToList();
             var randomUncommonRelicToAdd = allUncommonRelics[new Random().Next(allUncommonRelics.Count)].ToMutable();
             MF.Log.Info($"Adding random uncommon relic ({randomUncommonRelicToAdd})");
-            randomUncommonRelicToAdd.FloorAddedToDeck = 1;
-            __instance.AddRelicInternal(randomUncommonRelicToAdd, silent: true);
+            RelicCmd.Obtain(randomUncommonRelicToAdd, __instance);
         }
 
         if (PP.RareRelicValue)
@@ -72,8 +71,7 @@ public static class PlayerPatches
                 .Where(relic => relic.Rarity == RelicRarity.Rare).ToList();
             var randomRareRelicToAdd = allRareRelics[new Random().Next(allRareRelics.Count)].ToMutable();
             MF.Log.Info($"Adding random rare relic ({randomRareRelicToAdd})");
-            randomRareRelicToAdd.FloorAddedToDeck = 1;
-            __instance.AddRelicInternal(randomRareRelicToAdd, silent: true);
+            RelicCmd.Obtain(randomRareRelicToAdd, __instance);
         }
     }
 }
