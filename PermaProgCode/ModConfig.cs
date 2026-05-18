@@ -302,11 +302,23 @@ internal class PP : SimpleModConfig
 
     public void AddGold500()
     {
-        CurrencyAvailable += 500;
+        AddCurrencyToAvailable(500);
         UpdateUi();
     }
 
     // Helpers
+    public static void AddCurrencyToAvailable(int currency)
+    {
+        CurrencyAvailable += Math.Clamp(currency, 0, 9999);
+        CurrencyAvailable = Math.Clamp(CurrencyAvailable, 0, 999999);
+    }
+
+    public static void RemoveCurrencyFromAvailable(int currency)
+    {
+        CurrencyAvailable += Math.Clamp(-currency, -9999, 0);
+        CurrencyAvailable = Math.Clamp(CurrencyAvailable, 0, 999999);
+    }
+
     private void UpdateUi()
     {
         UpdateCurrentValues();
@@ -392,7 +404,7 @@ internal class PP : SimpleModConfig
         if (!IsArraySafe(upg, upg.UpgCosts)) return false;
         if (upg.UpgCosts[upg.CurrentLevel] * (GlobalCostMultiplier / 100) > CurrencyAvailable) return false;
 
-        CurrencyAvailable -= (int)(upg.UpgCosts[upg.CurrentLevel] * (GlobalCostMultiplier / 100));
+        RemoveCurrencyFromAvailable((int)(upg.UpgCosts[upg.CurrentLevel] * (GlobalCostMultiplier / 100)));
         upg.CurrentLevel++;
         MF.Log.Info($"Upgraded {upg.ValueName[..^"Value".Length]} to level {upg.CurrentLevel}");
         return true;
