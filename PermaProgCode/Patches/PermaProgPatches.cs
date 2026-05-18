@@ -182,7 +182,7 @@ public static class PermaProgPatches
 
     private static void ApplyInterest(RunState state)
     {
-        if (state.CurrentActIndex < 3 || PP.CurrencyInterestValue <= 0.1) return;
+        if (state.CurrentActIndex < 2 || PP.CurrencyInterestValue <= 0.1) return;
 
         var interest = (PP.CurrencyAvailable - PP.TotalCurrencyGainedDuringRun) * PP.CurrencyInterestValue / 100.0;
         interest = Math.Clamp(interest, 0.0, 3000.0);

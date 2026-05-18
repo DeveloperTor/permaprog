@@ -44,7 +44,7 @@
   "PERMAPROG-CURRENCY_GAIN_VALUE.hover.title": "货币增益",
   "PERMAPROG-CURRENCY_GAIN_VALUE.hover.desc": "通过游戏过程中获得金币来获取货币",
   "PERMAPROG-CURRENCY_INTEREST_VALUE.hover.title": "货币利息",
-  "PERMAPROG-CURRENCY_INTEREST_VALUE.hover.desc": "对已保存货币获得 <X>% 的利息。仅在游戏进入第三幕时生效。利息最大收益：3000 货币",
+  "PERMAPROG-CURRENCY_INTEREST_VALUE.hover.desc": "保存货币可获得 <X>% 的利息。此效果在游戏结束且进入第三幕时生效。最高利息收益：3000 货币",
   "PERMAPROG-GOLD_GAIN_VALUE.hover.title": "获得的金币",
   "PERMAPROG-GOLD_GAIN_VALUE.hover.desc": "战斗后获得的金币奖励提高 <X>%",
   "PERMAPROG-CARD_UPGRADES_VALUE.hover.title": "升级的起始卡牌",
