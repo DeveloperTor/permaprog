@@ -182,13 +182,12 @@ public static class PermaProgPatches
 
     private static void ApplyInterest(RunState state)
     {
-        if (state.CurrentActIndex < 3 || PP.CurrencyInterestValue <= 0.1) return;
+        if (state.CurrentActIndex < 2 || PP.CurrencyInterestValue <= 0.1) return;
 
         var interest = (PP.CurrencyAvailable - PP.TotalCurrencyGainedDuringRun) * PP.CurrencyInterestValue / 100.0;
         interest = Math.Clamp(interest, 0.0, 3000.0);
         MF.Log.Info($"Gain {(int)interest} in interest");
-        PP.TotalCurrencyGainedDuringRun += (int)interest;
-        PP.CurrencyAvailable += (int)interest;
+        PP.CurrencyToGain += (int)interest;
     }
 
     private static void AddLastCurrencyRewardToAvailableCurrency()
@@ -204,7 +203,7 @@ public static class PermaProgPatches
         MF.Log.Info($"Add currency ({PP.CurrencyToGain}) to available and " +
                     $"total gained ({PP.TotalCurrencyGainedDuringRun})");
         PP.CurrencyGainedLastRunText = PP.TotalCurrencyGainedDuringRun.ToString();
-        PP.CurrencyAvailable += PP.CurrencyToGain;
+        PP.AddCurrencyToAvailable(PP.CurrencyToGain);
         PP.CurrencyToGain = 0;
         MF.CurrencyLabel?.SetTextAutoSize(PP.CurrencyAvailable.ToString().PadLeft(7));
         ModConfig.SaveDebounced<PP>();
