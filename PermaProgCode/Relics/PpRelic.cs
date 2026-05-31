@@ -1,5 +1,6 @@
 ﻿using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models.Monsters;
@@ -57,7 +58,8 @@ public sealed class PpRelic : CustomRelicModel
         }
     }
 
-    public override Task BeforeTurnEndVeryEarly(PlayerChoiceContext choiceContext, CombatSide side)
+    public override Task BeforeSideTurnEndVeryEarly(PlayerChoiceContext choiceContext, CombatSide side,
+        IEnumerable<Creature> participants)
     {
         if (side != Owner.Creature.Side)
             return Task.CompletedTask;
@@ -65,7 +67,8 @@ public sealed class PpRelic : CustomRelicModel
         return Task.CompletedTask;
     }
 
-    public override async Task BeforeTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side,
+        IEnumerable<Creature> participants)
     {
         if (!ShouldTrigger)
             return;
@@ -78,10 +81,8 @@ public sealed class PpRelic : CustomRelicModel
         }
     }
 
-    public override Task BeforeSideTurnStart(
-        PlayerChoiceContext choiceContext,
-        CombatSide side,
-        ICombatState combatState)
+    public override Task BeforeSideTurnStart(PlayerChoiceContext choiceContext, CombatSide side,
+        IReadOnlyList<Creature> participants, ICombatState combatState)
     {
         ShouldTrigger = false;
         return Task.CompletedTask;
