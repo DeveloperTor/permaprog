@@ -63,7 +63,7 @@ public sealed class PpRelic : CustomRelicModel
     {
         if (side != Owner.Creature.Side)
             return Task.CompletedTask;
-        ShouldTrigger = RunManager.Instance.IsSinglePlayerOrFakeMultiplayer; // It is broken in multiplayer
+        ShouldTrigger = RunManager.Instance.IsSingleplayerOrFakeMultiplayer; // It is broken in multiplayer
         return Task.CompletedTask;
     }
 
