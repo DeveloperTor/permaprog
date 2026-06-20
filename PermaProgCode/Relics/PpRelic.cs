@@ -1,5 +1,6 @@
 ﻿using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models.Monsters;
@@ -34,10 +35,12 @@ public sealed class PpRelic : CustomRelicModel
         {
             Flash();
             var strengthAmount = new PowerVar<StrengthPower>((decimal)PP.StrengthGainValue);
-            await PowerCmd.Apply<StrengthPower>(Owner.Creature, strengthAmount.BaseValue, Owner.Creature, null);
+            await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), Owner.Creature,
+                strengthAmount.BaseValue, Owner.Creature, null);
             if (osty != null)
             {
-                await PowerCmd.Apply<StrengthPower>(osty, strengthAmount.BaseValue, osty, null);
+                await PowerCmd.Apply<StrengthPower>(new ThrowingPlayerChoiceContext(), osty,
+                    strengthAmount.BaseValue, osty, null);
             }
         }
 
@@ -45,23 +48,27 @@ public sealed class PpRelic : CustomRelicModel
         {
             Flash();
             var dexterityAmount = new PowerVar<DexterityPower>((decimal)PP.DexterityGainValue);
-            await PowerCmd.Apply<DexterityPower>(Owner.Creature, dexterityAmount.BaseValue, Owner.Creature, null);
+            await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), Owner.Creature,
+                dexterityAmount.BaseValue, Owner.Creature, null);
             if (osty != null)
             {
-                await PowerCmd.Apply<DexterityPower>(osty, dexterityAmount.BaseValue, osty, null);
+                await PowerCmd.Apply<DexterityPower>(new ThrowingPlayerChoiceContext(), osty,
+                    dexterityAmount.BaseValue, osty, null);
             }
         }
     }
 
-    public override Task BeforeTurnEndVeryEarly(PlayerChoiceContext choiceContext, CombatSide side)
+    public override Task BeforeSideTurnEndVeryEarly(PlayerChoiceContext choiceContext, CombatSide side,
+        IEnumerable<Creature> participants)
     {
         if (side != Owner.Creature.Side)
             return Task.CompletedTask;
-        ShouldTrigger = RunManager.Instance.IsSinglePlayerOrFakeMultiplayer; // It is broken in multiplayer
+        ShouldTrigger = RunManager.Instance.IsSingleplayerOrFakeMultiplayer; // It is broken in multiplayer
         return Task.CompletedTask;
     }
 
-    public override async Task BeforeTurnEnd(PlayerChoiceContext choiceContext, CombatSide side)
+    public override async Task BeforeSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side,
+        IEnumerable<Creature> participants)
     {
         if (!ShouldTrigger)
             return;
@@ -75,7 +82,7 @@ public sealed class PpRelic : CustomRelicModel
     }
 
     public override Task BeforeSideTurnStart(PlayerChoiceContext choiceContext, CombatSide side,
-        CombatState combatState)
+        IReadOnlyList<Creature> participants, ICombatState combatState)
     {
         ShouldTrigger = false;
         return Task.CompletedTask;
