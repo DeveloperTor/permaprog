@@ -29,6 +29,7 @@ public sealed class PpRelic : CustomRelicModel
 
     public override async Task BeforeCombatStartLate()
     {
+        if (!RunManager.Instance.IsSingleplayerOrFakeMultiplayer) return; // It is broken in multiplayer
         var osty = Owner.PlayerCombatState?.GetPet<Osty>();
 
         if (PP.StrengthGainValue > 0)
