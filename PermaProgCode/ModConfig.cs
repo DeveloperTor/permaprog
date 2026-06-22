@@ -216,6 +216,7 @@ internal class PP : SimpleModConfig
         if (IsLevelUpSuccessful(Upgrades.AscensionCurrency)) AscensionCurrencyLevel++;
         UpdateUi();
     }
+
     public void UpgradeButtonTravelCurrency()
     {
         if (IsLevelUpSuccessful(Upgrades.TravelCurrency)) TravelCurrencyLevel++;
@@ -472,6 +473,8 @@ internal class PP : SimpleModConfig
 
     public static void UpdateCharacterSelectHpGold(object? sender, EventArgs e)
     {
+        if (BaseHp == 9999 || BaseGold == 9999) return; // Naive fix to not update text when random is selected
+
         var hp = BaseHp;
         if (BalancingEnabled) hp = (int)(hp * 0.9);
         var hpText = (hp + (int)MaxHealthValue).ToString();

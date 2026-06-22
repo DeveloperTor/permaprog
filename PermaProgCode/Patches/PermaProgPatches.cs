@@ -27,8 +27,8 @@ public static class PermaProgPatches
     [HarmonyPostfix]
     public static void UpdateTextHpGold(NCharacterSelectButton charSelectButton, CharacterModel characterModel)
     {
-        PP.BaseGold = characterModel.StartingGold;
-        PP.BaseHp = characterModel.StartingHp;
+        PP.BaseGold = charSelectButton.IsRandom ? 9999 : characterModel.StartingGold;
+        PP.BaseHp = charSelectButton.IsRandom ? 9999 : characterModel.StartingHp;
         PP.UpdateCharacterSelectHpGold(null, EventArgs.Empty);
     }
 

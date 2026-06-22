@@ -83,9 +83,9 @@ public static class PlayerPatches
         typeof(List<string>), typeof(List<ModelId>), typeof(List<ModelId>)
     ])]
     [HarmonyPrefix]
-    public static void Test(CharacterModel character, ulong netId, int currentHp, ref int maxHp, int maxEnergy,
-        ref int gold, int potionSlotCount, int orbSlotCount, RelicGrabBag sharedRelicGrabBag, UnlockState unlockState,
-        List<ModelId>? discoveredCards = null, List<ModelId>? discoveredEnemies = null,
+    public static void ApplyStartingHpGoldUpgrades(CharacterModel character, ulong netId, int currentHp, ref int maxHp,
+        int maxEnergy, ref int gold, int potionSlotCount, int orbSlotCount, RelicGrabBag sharedRelicGrabBag,
+        UnlockState unlockState, List<ModelId>? discoveredCards = null, List<ModelId>? discoveredEnemies = null,
         List<string>? discoveredEpochs = null, List<ModelId>? discoveredPotions = null,
         List<ModelId>? discoveredRelics = null)
     {
