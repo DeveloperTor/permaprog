@@ -20,7 +20,7 @@ internal class PP : SimpleModConfig
     public static bool DebugMenuEnabled { get; set; }
     public static string CurrencyText { get; set; } = "0";
     public static string CurrencyGainedLastRunText { get; set; } = "0";
-    public static bool BalancingEnabled { get; set; } = true;
+    public static bool BalancingEnabled { get; set; } = false;
 
     public override void SetupConfigUI(Control optionContainer)
     {

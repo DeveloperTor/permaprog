@@ -1,3 +1,4 @@
+using MegaCrit.Sts2.Core.Nodes.Screens.CharacterSelect;
 using MegaCrit.Sts2.Core.Nodes.Screens.GameOverScreen;
 using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
@@ -22,6 +23,15 @@ namespace PermaProg.PermaProgCode.Patches;
 [HarmonyPatch]
 public static class PermaProgPatches
 {
+    [HarmonyPatch(typeof(NCharacterSelectScreen), "SelectCharacter")]
+    [HarmonyPostfix]
+    public static void UpdateTextHpGold(NCharacterSelectButton charSelectButton, CharacterModel characterModel)
+    {
+        PP.BaseGold = characterModel.StartingGold;
+        PP.BaseHp = characterModel.StartingHp;
+        PP.UpdateCharacterSelectHpGold(null, EventArgs.Empty);
+    }
+
     [HarmonyPatch(typeof(RunState), "CreateForNewRun")]
     [HarmonyPostfix]
     public static void GetCurrentAscensionLevel(RunState __result)

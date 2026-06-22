@@ -1,7 +1,7 @@
 ﻿{
   "PERMAPROG.mod_title": "PermaProg Shop",
   "PERMAPROG-DEBUG_MENU_ENABLED.title": "Show debug menu (re-enter shop after toggle)",
-  "PERMAPROG-BALANCING_ENABLED.title": "Enable balancing (recommended on)",
+  "PERMAPROG-BALANCING_ENABLED.title": "Enable balanced mode (increase difficulty)",
   "PERMAPROG-CURRENCY_TEXT.title": "Currency available to spend:",
   "PERMAPROG-CURRENCY_GAINED_LAST_RUN_TEXT.title": "Currency gained last run:",
   "PERMAPROG-GLOBAL_COST_MULTIPLIER.title": "Global cost multiplier (re-enter shop to apply):",

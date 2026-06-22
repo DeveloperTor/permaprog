@@ -5,6 +5,7 @@ using PermaProg.PermaProgCode.Relics;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Unlocks;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 using BaseLib.Config;
 using HarmonyLib;
 
@@ -73,5 +74,31 @@ public static class PlayerPatches
             MF.Log.Info($"Adding random rare relic ({randomRareRelicToAdd})");
             RelicCmd.Obtain(randomRareRelicToAdd, __instance);
         }
+    }
+
+    [HarmonyPatch(typeof(Player), MethodType.Constructor,
+    [
+        typeof(CharacterModel), typeof(ulong), typeof(int), typeof(int), typeof(int), typeof(int), typeof(int),
+        typeof(int), typeof(RelicGrabBag), typeof(UnlockState), typeof(List<ModelId>), typeof(List<ModelId>),
+        typeof(List<string>), typeof(List<ModelId>), typeof(List<ModelId>)
+    ])]
+    [HarmonyPrefix]
+    public static void Test(CharacterModel character, ulong netId, int currentHp, ref int maxHp, int maxEnergy,
+        ref int gold, int potionSlotCount, int orbSlotCount, RelicGrabBag sharedRelicGrabBag, UnlockState unlockState,
+        List<ModelId>? discoveredCards = null, List<ModelId>? discoveredEnemies = null,
+        List<string>? discoveredEpochs = null, List<ModelId>? discoveredPotions = null,
+        List<ModelId>? discoveredRelics = null)
+    {
+        if (PP.BalancingEnabled)
+        {
+            maxHp = (int)(maxHp * 0.9);
+            gold = 0;
+        }
+
+        maxHp += (int)PP.MaxHealthValue;
+        gold += (int)PP.StartGoldValue;
+
+        MF.Log.Info($"Setting starting hp of {character} to " + maxHp);
+        MF.Log.Info($"Setting starting gold of {character} to " + gold);
     }
 }
