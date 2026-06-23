@@ -147,7 +147,7 @@ public static class PermaProgPatches
     }
 
     [HarmonyPatch(typeof(NMainMenu), "OnContinueButtonPressed")]
-    [HarmonyPostfix]
+    [HarmonyPrefix]
     public static void ContinueRunFromMainMenu(NButton _)
     {
         MF.Log.Info("Run continued from main menu. Setting RunOngoing to true");

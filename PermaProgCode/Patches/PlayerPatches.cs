@@ -89,6 +89,8 @@ public static class PlayerPatches
         List<string>? discoveredEpochs = null, List<ModelId>? discoveredPotions = null,
         List<ModelId>? discoveredRelics = null)
     {
+        if (PP.RunOngoing) return;
+
         if (PP.BalancingEnabled)
         {
             maxHp = (int)(maxHp * 0.9);
