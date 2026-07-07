@@ -21,9 +21,9 @@ public static class PlayerPatches
         MF.Log.Info("Starting new run");
         PP.RunOngoing = false;
 
-        foreach (var upg in PP.Upgrades.All.Keys.Where(upg => upg.CurrentLevel > 0))
+        foreach (var upg in PP.Upgrades.All.Keys.Where(upg => PP.GetCurrentLevelForCharacter(upg.CurrentLevel) > 0))
         {
-            MF.Log.Info($"{upg.CurrentLevelName} is level {upg.CurrentLevel}");
+            MF.Log.Info($"{upg.CurrentLevelName} is level {PP.GetCurrentLevelForCharacter(upg.CurrentLevel)}");
         }
 
         PP.TotalCurrencyGainedDuringRun = 0;

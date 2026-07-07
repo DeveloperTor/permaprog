@@ -17,6 +17,7 @@ internal class PP : SimpleModConfig
     [ConfigIgnore] public static bool RunOngoing { get; set; }
     [ConfigHideInUI] public static int TotalCurrencyGainedDuringRun { get; set; }
     [ConfigHideInUI] public static int CurrencyAvailable { get; set; }
+    [ConfigHideInUI] public static CharEnum SelectedCharacter { get; set; } = CharEnum.Ironclad;
     public static bool DebugMenuEnabled { get; set; }
     public static string CurrencyText { get; set; } = "0";
     public static string CurrencyGainedLastRunText { get; set; } = "0";
@@ -38,8 +39,39 @@ internal class PP : SimpleModConfig
         }
 
         _optionContainer.AddChild(CreateToggleOption(GetPropertyInfo(nameof(BalancingEnabled))));
+        _optionContainer.AddChild(CreateDividerControl());
+
         CreateLineEdit(nameof(CurrencyGainedLastRunText), 20);
         CreateLineEdit(nameof(CurrencyText), 50, true);
+
+        _optionContainer.AddChild(CreateDividerControl());
+        _optionContainer.AddChild(CreateDividerControl());
+
+        //TODO: move int function
+        switch (SelectedCharacter)
+        {
+            case CharEnum.Ironclad:
+                _optionContainer.AddChild(CreateSectionHeader("The Ironclad"));
+                break;
+            case CharEnum.Silent:
+                _optionContainer.AddChild(CreateSectionHeader("The Silent"));
+                break;
+            case CharEnum.Regent:
+                _optionContainer.AddChild(CreateSectionHeader("The Regent"));
+                break;
+            case CharEnum.Necrobinder:
+                _optionContainer.AddChild(CreateSectionHeader("The Necrobinder"));
+                break;
+            case CharEnum.Defect:
+                _optionContainer.AddChild(CreateSectionHeader("The Defect"));
+                break;
+            case CharEnum.ModdedCharacter:
+            default:
+                _optionContainer.AddChild(CreateSectionHeader("The Unknown"));
+                break;
+        }
+
+        _optionContainer.AddChild(CreateDividerControl());
         _optionContainer.AddChild(CreateDividerControl());
 
         _optionContainer.AddChild(CreateSectionHeader("Tier 1 upgrades"));
@@ -145,6 +177,17 @@ internal class PP : SimpleModConfig
         }
     }
 
+    // Enums
+    public enum CharEnum
+    {
+        Ironclad,
+        Silent,
+        Regent,
+        Necrobinder,
+        Defect,
+        ModdedCharacter
+    }
+
     // Checkboxes
     public static bool CommonRelicValue { get; set; }
     public static int CommonRelicLevel { get; set; }
@@ -154,6 +197,8 @@ internal class PP : SimpleModConfig
 
     public static bool RareRelicValue { get; set; }
     public static int RareRelicLevel { get; set; }
+
+    //TODO: the values are shared, what to do
 
     // Sliders
     [ConfigSlider(75.0, Format = "{0:0}%")]
@@ -213,91 +258,91 @@ internal class PP : SimpleModConfig
     // Buttons
     public void UpgradeButtonAscensionCurrency()
     {
-        if (IsLevelUpSuccessful(Upgrades.AscensionCurrency)) AscensionCurrencyLevel++;
+        if (IsLevelUpSuccessful(Upgrades.AscensionCurrency)) AscensionCurrencyLevel += 1 << (int)SelectedCharacter * 5;
         UpdateUi();
     }
 
     public void UpgradeButtonTravelCurrency()
     {
-        if (IsLevelUpSuccessful(Upgrades.TravelCurrency)) TravelCurrencyLevel++;
+        if (IsLevelUpSuccessful(Upgrades.TravelCurrency)) TravelCurrencyLevel += 1 << (int)SelectedCharacter * 5;
         UpdateUi();
     }
 
     public void UpgradeButtonRareRelic()
     {
-        if (IsLevelUpSuccessful(Upgrades.RareRelic)) RareRelicLevel++;
+        if (IsLevelUpSuccessful(Upgrades.RareRelic)) RareRelicLevel += 1 << (int)SelectedCharacter * 5;
         UpdateUi();
     }
 
     public void UpgradeButtonUncommonRelic()
     {
-        if (IsLevelUpSuccessful(Upgrades.UncommonRelic)) UncommonRelicLevel++;
+        if (IsLevelUpSuccessful(Upgrades.UncommonRelic)) UncommonRelicLevel += 1 << (int)SelectedCharacter * 5;
         UpdateUi();
     }
 
     public void UpgradeButtonCommonRelic()
     {
-        if (IsLevelUpSuccessful(Upgrades.CommonRelic)) CommonRelicLevel++;
+        if (IsLevelUpSuccessful(Upgrades.CommonRelic)) CommonRelicLevel += 1 << (int)SelectedCharacter * 5;
         UpdateUi();
     }
 
     public void UpgradeButtonDexterityGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.DexterityGain)) DexterityGainLevel++;
+        if (IsLevelUpSuccessful(Upgrades.DexterityGain)) DexterityGainLevel += 1 << (int)SelectedCharacter * 5;
         UpdateUi();
     }
 
     public void UpgradeButtonStrengthGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.StrengthGain)) StrengthGainLevel++;
+        if (IsLevelUpSuccessful(Upgrades.StrengthGain)) StrengthGainLevel += 1 << (int)SelectedCharacter * 5;
         UpdateUi();
     }
 
     public void UpgradeButtonCardRarity()
     {
-        if (IsLevelUpSuccessful(Upgrades.CardRarity)) CardRarityLevel++;
+        if (IsLevelUpSuccessful(Upgrades.CardRarity)) CardRarityLevel += 1 << (int)SelectedCharacter * 5;
         UpdateUi();
     }
 
     public void UpgradeButtonBlockGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.BlockGain)) BlockGainLevel++;
+        if (IsLevelUpSuccessful(Upgrades.BlockGain)) BlockGainLevel += 1 << (int)SelectedCharacter * 5;
         UpdateUi();
     }
 
     public void UpgradeButtonGoldGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.GoldGain)) GoldGainLevel++;
+        if (IsLevelUpSuccessful(Upgrades.GoldGain)) GoldGainLevel += 1 << (int)SelectedCharacter * 5;
         UpdateUi();
     }
 
     public void UpgradeButtonCurrencyInterest()
     {
-        if (IsLevelUpSuccessful(Upgrades.CurrencyInterest)) CurrencyInterestLevel++;
+        if (IsLevelUpSuccessful(Upgrades.CurrencyInterest)) CurrencyInterestLevel += 1 << (int)SelectedCharacter * 5;
         UpdateUi();
     }
 
     public void UpgradeButtonCardUpgrades()
     {
-        if (IsLevelUpSuccessful(Upgrades.CardUpgrades)) CardUpgradesLevel++;
+        if (IsLevelUpSuccessful(Upgrades.CardUpgrades)) CardUpgradesLevel += 1 << (int)SelectedCharacter * 5;
         UpdateUi();
     }
 
     public void UpgradeButtonMaxHealth()
     {
-        if (IsLevelUpSuccessful(Upgrades.MaxHealth)) MaxHealthLevel++;
+        if (IsLevelUpSuccessful(Upgrades.MaxHealth)) MaxHealthLevel += 1 << (int)SelectedCharacter * 5;
         UpdateUi();
     }
 
     public void UpgradeButtonCurrencyGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.CurrencyGain)) CurrencyGainLevel++;
+        if (IsLevelUpSuccessful(Upgrades.CurrencyGain)) CurrencyGainLevel += 1 << (int)SelectedCharacter * 5;
         UpdateUi();
     }
 
     public void UpgradeButtonStartGold()
     {
-        if (IsLevelUpSuccessful(Upgrades.StartGold)) StartGoldLevel++;
+        if (IsLevelUpSuccessful(Upgrades.StartGold)) StartGoldLevel += 1 << (int)SelectedCharacter * 5;
         UpdateUi();
     }
 
@@ -320,6 +365,17 @@ internal class PP : SimpleModConfig
         CurrencyAvailable = Math.Clamp(CurrencyAvailable, 0, 999999);
     }
 
+    public static int GetCurrentLevelForCharacter(int currentLevel)
+    {
+        return currentLevel >> (int)SelectedCharacter * 5 & 0b11111;
+    }
+
+    private static void SetCurrentLevelForCharacter(ref int currentLevel, int newLevel)
+    {
+        var bitMask = 0b11111 << (int)SelectedCharacter * 5;
+        currentLevel = currentLevel & ~bitMask | newLevel << (int)SelectedCharacter * 5;
+    }
+
     private void UpdateUi()
     {
         UpdateCurrentValues();
@@ -333,14 +389,15 @@ internal class PP : SimpleModConfig
         }
     }
 
+    //TODO: restore total levels functionality
     private void UpdateCurrentValues()
     {
-        var totalCurrentLevels = 0;
+        var totalCurrentLevels = 100;
         foreach (var upg in Upgrades.All.Keys.Where(upg => upg.Unlocked))
         {
             var propertyInfo = GetPropertyInfo(upg.CurrentLevelName);
             upg.CurrentLevel = (int)(propertyInfo.GetValue(Upgrades) ?? throw new InvalidOperationException());
-            totalCurrentLevels += upg.CurrentLevel;
+            //totalCurrentLevels += upg.CurrentLevel;
         }
 
         Upgrades.TotalCurrentLevels = totalCurrentLevels;
@@ -362,7 +419,7 @@ internal class PP : SimpleModConfig
         if (sliderRow?.SettingControl is not NConfigSlider slider) return;
 
         IsArraySafe(upg, upg.Vals);
-        var maxSliderValue = upg.Vals[upg.CurrentLevel] * (GlobalValueMultiplier / 100.0);
+        var maxSliderValue = upg.Vals[GetCurrentLevelForCharacter(upg.CurrentLevel)] * (GlobalValueMultiplier / 100.0);
         if (maxSliderValue <= 0)
         {
             slider.Visible = false;
@@ -378,7 +435,7 @@ internal class PP : SimpleModConfig
     {
         var checkboxRow = _optionContainer?.GetNode<NConfigOptionRow>(upg.ValueName);
         if (checkboxRow?.SettingControl is not NConfigTickbox checkbox) return;
-        checkbox.Visible = upg.CurrentLevel >= upg.MaxLevel;
+        checkbox.Visible = GetCurrentLevelForCharacter(upg.CurrentLevel) >= upg.MaxLevel;
     }
 
     private void UpdateButtons(UpgradeableModel upg)
@@ -386,7 +443,7 @@ internal class PP : SimpleModConfig
         var buttonRow = _optionContainer?.GetNode<NConfigOptionRow>(upg.ButtonName);
         if (buttonRow?.SettingControl is not NConfigButton button) return;
 
-        if (upg.CurrentLevel >= upg.MaxLevel)
+        if (GetCurrentLevelForCharacter(upg.CurrentLevel) >= upg.MaxLevel)
         {
             (button.GetChild(1) as Label)!.Text = "Maxed out!";
             return;
@@ -394,20 +451,20 @@ internal class PP : SimpleModConfig
 
         IsArraySafe(upg, upg.UpgCosts);
         (button.GetChild(1) as Label)!.Text =
-            upg.UpgCosts[upg.CurrentLevel] <= 0
+            upg.UpgCosts[GetCurrentLevelForCharacter(upg.CurrentLevel)] <= 0
                 ? "Free!"
-                : ((int)(upg.UpgCosts[upg.CurrentLevel] * (GlobalCostMultiplier / 100))).ToString();
+                : ((int)(upg.UpgCosts[GetCurrentLevelForCharacter(upg.CurrentLevel)] * (GlobalCostMultiplier / 100))).ToString();
     }
 
     private bool IsLevelUpSuccessful(UpgradeableModel upg)
     {
-        if (upg.CurrentLevel >= upg.MaxLevel) return false;
+        if (GetCurrentLevelForCharacter(upg.CurrentLevel) >= upg.MaxLevel) return false;
         if (!IsArraySafe(upg, upg.UpgCosts)) return false;
-        if (upg.UpgCosts[upg.CurrentLevel] * (GlobalCostMultiplier / 100) > CurrencyAvailable) return false;
+        if (upg.UpgCosts[GetCurrentLevelForCharacter(upg.CurrentLevel)] * (GlobalCostMultiplier / 100) > CurrencyAvailable) return false;
 
-        RemoveCurrencyFromAvailable((int)(upg.UpgCosts[upg.CurrentLevel] * (GlobalCostMultiplier / 100)));
-        upg.CurrentLevel++;
-        MF.Log.Info($"Upgraded {upg.ValueName[..^"Value".Length]} to level {upg.CurrentLevel}");
+        RemoveCurrencyFromAvailable((int)(upg.UpgCosts[GetCurrentLevelForCharacter(upg.CurrentLevel)] * (GlobalCostMultiplier / 100)));
+        SetCurrentLevelForCharacter(ref upg.CurrentLevel, GetCurrentLevelForCharacter(upg.CurrentLevel) + 1);
+        MF.Log.Info($"Upgraded {upg.ValueName[..^"Value".Length]} to level {GetCurrentLevelForCharacter(upg.CurrentLevel)}");
         return true;
     }
 
@@ -450,11 +507,11 @@ internal class PP : SimpleModConfig
 
     private bool IsArraySafe(UpgradeableModel upg, Array<int> upgArray)
     {
-        if (upg.CurrentLevel <= upgArray.Count - 1 || upg.CurrentLevel == 0) return true;
+        if (GetCurrentLevelForCharacter(upg.CurrentLevel) <= upgArray.Count - 1 || GetCurrentLevelForCharacter(upg.CurrentLevel) == 0) return true;
 
-        MF.Log.Error($"{upg.CurrentLevelName}: Current level ({upg.CurrentLevel}) is higher than values " +
+        MF.Log.Error($"{upg.CurrentLevelName}: Current level ({GetCurrentLevelForCharacter(upg.CurrentLevel)}) is higher than values " +
                      $"available ({upgArray.Count - 1}). Lowering value to max level available");
-        upg.CurrentLevel = upgArray.Count - 1;
+        SetCurrentLevelForCharacter(ref upg.CurrentLevel, upgArray.Count - 1);
         GetPropertyInfo(upg.CurrentLevelName).SetValue(Upgrades, upg.CurrentLevel);
         return false;
     }
@@ -471,6 +528,7 @@ internal class PP : SimpleModConfig
     public static int BaseHp;
     public static int BaseGold;
 
+    //TODO: wrong hp, gold for text
     public static void UpdateCharacterSelectHpGold(object? sender, EventArgs e)
     {
         if (BaseHp == 9999 || BaseGold == 9999) return; // Naive fix to not update text when random is selected
