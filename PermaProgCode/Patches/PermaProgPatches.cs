@@ -25,7 +25,7 @@ public static class PermaProgPatches
 {
     [HarmonyPatch(typeof(NCharacterSelectScreen), "SelectCharacter")]
     [HarmonyPostfix]
-    public static void UpdateTextHpGold(NCharacterSelectButton charSelectButton, CharacterModel characterModel)
+    public static void LoadValuesAndUpdateText(NCharacterSelectButton charSelectButton, CharacterModel characterModel)
     {
         // TODO: handle random
         PP.SelectedCharacter = characterModel.Title.GetFormattedText() switch {
@@ -36,6 +36,7 @@ public static class PermaProgPatches
             "The Defect" => PP.CharEnum.Defect,
             _ => PP.CharEnum.ModdedCharacter
         };
+        PP.LoadValues();
 
         PP.BaseGold = charSelectButton.IsRandom ? 9999 : characterModel.StartingGold;
         PP.BaseHp = charSelectButton.IsRandom ? 9999 : characterModel.StartingHp;
@@ -164,9 +165,9 @@ public static class PermaProgPatches
         PP.CurrencyToGain = 0;
         PP.RunOngoing = true;
 
-        foreach (var upg in PP.Upgrades.All.Keys.Where(upg => PP.GetCurrentLevelForCharacter(upg.CurrentLevel) > 0))
+        foreach (var upg in PP.Upgrades.All.Keys.Where(upg => PP.GetUpgLevel(upg.CurrentLevel) > 0))
         {
-            MF.Log.Info($"{upg.CurrentLevelName} is level {PP.GetCurrentLevelForCharacter(upg.CurrentLevel)}");
+            MF.Log.Info($"{upg.CurrentLevelName} is level {PP.GetUpgLevel(upg.CurrentLevel)}");
         }
     }
 
