@@ -56,6 +56,7 @@ internal class PP : SimpleModConfig
         CreateUpgradeableUi(Upgrades.MaxHealth, UpgradeButtonMaxHealth);
         CreateUpgradeableUi(Upgrades.TravelCurrency, UpgradeButtonTravelCurrency);
 
+        SetLocked();
         UpdateCurrentValues();
         Tier2Upgrades(_optionContainer);
         UpdateCurrentValues();
@@ -93,24 +94,27 @@ internal class PP : SimpleModConfig
         }
     }
 
+    private static void SetLocked()
+    {
+        Upgrades.AscensionCurrency.Unlocked = false;
+        Upgrades.CurrencyInterest.Unlocked = false;
+        Upgrades.DexterityGain.Unlocked = false;
+        Upgrades.UncommonRelic.Unlocked = false;
+        Upgrades.CardUpgrades.Unlocked = false;
+        Upgrades.StrengthGain.Unlocked = false;
+        Upgrades.CommonRelic.Unlocked = false;
+        Upgrades.CardRarity.Unlocked = false;
+        Upgrades.BlockGain.Unlocked = false;
+        Upgrades.RareRelic.Unlocked = false;
+        Upgrades.GoldGain.Unlocked = false;
+    }
+
     private void Tier2Upgrades(Control optionContainer)
     {
         if (Upgrades.TotalCurrentLevels < 5)
         {
             optionContainer.AddChild(CreateSectionHeader("..some beings... ..are yet to... ..be revealed..."));
             optionContainer.AddChild(CreateSectionHeader("???"));
-
-            Upgrades.AscensionCurrency.Unlocked = false;
-            Upgrades.CurrencyInterest.Unlocked = false;
-            Upgrades.DexterityGain.Unlocked = false;
-            Upgrades.UncommonRelic.Unlocked = false;
-            Upgrades.CardUpgrades.Unlocked = false;
-            Upgrades.StrengthGain.Unlocked = false;
-            Upgrades.CommonRelic.Unlocked = false;
-            Upgrades.CardRarity.Unlocked = false;
-            Upgrades.BlockGain.Unlocked = false;
-            Upgrades.RareRelic.Unlocked = false;
-            Upgrades.GoldGain.Unlocked = false;
         }
         else
         {
