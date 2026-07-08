@@ -48,7 +48,7 @@ public static class PermaProgPatches
         try
         {
             var player = LocalContext.GetMe(RunManager.Instance.DebugOnlyGetState()?.Players!);
-            var cards = player!.Deck.Cards;
+            var cards = player!.Deck.Cards.Where(card => card.IsUpgradable).ToList();
             var cardsToUpgrade = RandomlySelectedCards(cards, (int)PP.CardUpgradesValue, cards.Count);
             var cardModels = cardsToUpgrade.ToList();
 
@@ -170,14 +170,15 @@ public static class PermaProgPatches
     }
 
     // Helpers
-    public static IEnumerable<T> RandomlySelectedCards<T>(IEnumerable<T> sequence, int count, int sequenceLength)
+    public static IEnumerable<T> RandomlySelectedCards<T>(IEnumerable<T> cards, int amountOfCardsToUpgrade,
+        int totalAmountOfUpgradeableCards)
     {
         var rng = new Random();
-        var available = sequenceLength;
-        var remaining = count;
+        var remaining = amountOfCardsToUpgrade;
+        var available = totalAmountOfUpgradeableCards;
 
-        using var iterator = sequence.GetEnumerator();
-        for (var current = 0; current < sequenceLength; ++current)
+        using var iterator = cards.GetEnumerator();
+        for (var current = 0; current < totalAmountOfUpgradeableCards; ++current)
         {
             iterator.MoveNext();
             if (rng.NextDouble() < remaining / (double)available)
