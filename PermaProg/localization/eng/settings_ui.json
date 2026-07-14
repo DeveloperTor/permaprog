@@ -20,8 +20,8 @@
   "PERMAPROG-COMMON_RELIC_VALUE.title": "Start with random common relic:",
   "PERMAPROG-UNCOMMON_RELIC_VALUE.title": "Start with random uncommon relic:",
   "PERMAPROG-RARE_RELIC_VALUE.title": "Start with random rare relic:",
-  "PERMAPROG-STRENGTH_GAIN_VALUE.title": "Strength gained at combat start:",
-  "PERMAPROG-DEXTERITY_GAIN_VALUE.title": "Dexterity gained at combat start:",
+  "PERMAPROG-STRENGTH_GAIN_VALUE.title": "Strength gained at combat start (singleplayer only):",
+  "PERMAPROG-DEXTERITY_GAIN_VALUE.title": "Dexterity gained at combat start (singleplayer only):",
   "PERMAPROG-ASCENSION_CURRENCY_VALUE.title": "Currency gained per ascension level:",
 
   "PERMAPROG-UPGRADE_BUTTON_START_GOLD.title": "Upgrade +20 gold",

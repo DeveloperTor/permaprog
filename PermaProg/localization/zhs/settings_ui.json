@@ -20,8 +20,8 @@
   "PERMAPROG-COMMON_RELIC_VALUE.title": "随机普通遗物起始：",
   "PERMAPROG-UNCOMMON_RELIC_VALUE.title": "随机非凡遗物起始：",
   "PERMAPROG-RARE_RELIC_VALUE.title": "随机稀有遗物起始：",
-  "PERMAPROG-STRENGTH_GAIN_VALUE.title": "战斗开始获得力量：",
-  "PERMAPROG-DEXTERITY_GAIN_VALUE.title": "战斗开始获得敏捷：",
+  "PERMAPROG-STRENGTH_GAIN_VALUE.title": "战斗开始获得力量（仅限单人游戏）：",
+  "PERMAPROG-DEXTERITY_GAIN_VALUE.title": "战斗开始获得敏捷（仅限单人游戏）：",
   "PERMAPROG-ASCENSION_CURRENCY_VALUE.title": "每个晋升等级获得的货币：",
 
   "PERMAPROG-UPGRADE_BUTTON_START_GOLD.title": "升级 +20 金币",
