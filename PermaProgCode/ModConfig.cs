@@ -22,7 +22,18 @@ internal class PP : SimpleModConfig
     public static string CurrencyText { get; set; } = "0";
     public static string CurrencyGainedLastRunText { get; set; } = "0";
     public static bool BalancingEnabled { get; set; } = false;
-    public static bool PerCharacterEnabled { get; set; } = true;
+
+    private static bool _perCharacterEnabled = true;
+
+    public static bool PerCharacterEnabled
+    {
+        get => _perCharacterEnabled;
+        set
+        {
+            _perCharacterEnabled = value;
+            ResetCurrentValues();
+        }
+    }
 
     public override void SetupConfigUI(Control optionContainer)
     {
@@ -456,7 +467,7 @@ internal class PP : SimpleModConfig
 
         IsArraySafe(upg, upg.Vals);
         var maxSliderValue = upg.Vals[GetUpgLevel(upg.CurrentLevel)] * (GlobalValueMultiplier / 100.0);
-        if (maxSliderValue <= 0)
+        if (maxSliderValue <= 0.1)
         {
             slider.Visible = false;
         }
@@ -620,5 +631,25 @@ internal class PP : SimpleModConfig
         DexterityGainValue = GetUpgValue(DexterityGainValueSaved);
         TravelCurrencyValue = GetUpgValue(TravelCurrencyValueSaved);
         AscensionCurrencyValue = GetUpgValue(AscensionCurrencyValueSaved);
+    }
+
+    private static void ResetCurrentValues()
+    {
+        CommonRelicValue = false;
+        UncommonRelicValue = false;
+        RareRelicValue = false;
+
+        StartGoldValue = 0;
+        CurrencyGainValue = 0;
+        MaxHealthValue = 0;
+        CardUpgradesValue = 0;
+        CurrencyInterestValue = 0;
+        GoldGainValue = 0;
+        BlockGainValue = 0;
+        CardRarityValue = 0;
+        StrengthGainValue = 0;
+        DexterityGainValue = 0;
+        TravelCurrencyValue = 0;
+        AscensionCurrencyValue = 0;
     }
 }
