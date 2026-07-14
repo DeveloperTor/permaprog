@@ -27,20 +27,17 @@ public static class PermaProgPatches
     [HarmonyPostfix]
     public static void LoadValuesAndUpdateText(NCharacterSelectButton charSelectButton, CharacterModel characterModel)
     {
-        // TODO: handle random
-        PP.SelectedCharacter = characterModel.Title.GetFormattedText() switch {
-            "The Ironclad" => PP.CharEnum.Ironclad,
-            "The Silent" => PP.CharEnum.Silent,
-            "The Regent" => PP.CharEnum.Regent,
-            "The Necrobinder" => PP.CharEnum.Necrobinder,
-            "The Defect" => PP.CharEnum.Defect,
-            _ => PP.CharEnum.ModdedCharacter
-        };
-        PP.LoadValues();
+        var gold = charSelectButton.IsRandom ? 9999 : characterModel.StartingGold;
+        var hp = charSelectButton.IsRandom ? 9999 : characterModel.StartingHp;
+        SetCharacter(characterModel, gold, hp);
+    }
 
-        PP.BaseGold = charSelectButton.IsRandom ? 9999 : characterModel.StartingGold;
-        PP.BaseHp = charSelectButton.IsRandom ? 9999 : characterModel.StartingHp;
-        PP.UpdateCharacterSelectHpGold(null, EventArgs.Empty);
+    [HarmonyPatch(typeof(NCharacterSelectScreen), "OnLocalCharacterChangedForRandom")]
+    [HarmonyPostfix]
+    public static void ApplyProgressionForRandom(CharacterModel characterModel)
+    {
+        MF.Log.Info("Applying progression for random");
+        SetCharacter(characterModel, characterModel.StartingGold, characterModel.StartingHp);
     }
 
     [HarmonyPatch(typeof(RunState), "CreateForNewRun")]
@@ -229,5 +226,22 @@ public static class PermaProgPatches
         PP.CurrencyToGain = 0;
         MF.CurrencyLabel?.SetTextAutoSize(PP.CurrencyAvailable.ToString().PadLeft(7));
         ModConfig.SaveDebounced<PP>();
+    }
+
+    private static void SetCharacter(CharacterModel characterModel, int gold, int hp)
+    {
+        PP.SelectedCharacter = characterModel.Title.GetFormattedText() switch {
+            "The Ironclad" => PP.CharEnum.Ironclad,
+            "The Silent" => PP.CharEnum.Silent,
+            "The Regent" => PP.CharEnum.Regent,
+            "The Necrobinder" => PP.CharEnum.Necrobinder,
+            "The Defect" => PP.CharEnum.Defect,
+            _ => PP.CharEnum.ModdedCharacter
+        };
+        PP.LoadValues();
+
+        PP.BaseGold = gold;
+        PP.BaseHp = hp;
+        PP.UpdateCharacterSelectHpGold(null, EventArgs.Empty);
     }
 }
