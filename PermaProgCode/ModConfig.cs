@@ -17,10 +17,12 @@ internal class PP : SimpleModConfig
     [ConfigIgnore] public static bool RunOngoing { get; set; }
     [ConfigHideInUI] public static int TotalCurrencyGainedDuringRun { get; set; }
     [ConfigHideInUI] public static int CurrencyAvailable { get; set; }
+    [ConfigHideInUI] public static CharEnum SelectedCharacter { get; set; } = CharEnum.Ironclad;
     public static bool DebugMenuEnabled { get; set; }
     public static string CurrencyText { get; set; } = "0";
     public static string CurrencyGainedLastRunText { get; set; } = "0";
     public static bool BalancingEnabled { get; set; } = false;
+    public static bool PerCharacterEnabled { get; set; } = true;
 
     public override void SetupConfigUI(Control optionContainer)
     {
@@ -35,11 +37,19 @@ internal class PP : SimpleModConfig
             _optionContainer.AddChild(CreateSliderOption(GetPropertyInfo(nameof(GlobalCostMultiplier))));
             _optionContainer.AddChild(CreateSliderOption(GetPropertyInfo(nameof(GlobalValueMultiplier))));
             _optionContainer.AddChild(CreateDividerControl());
+            _optionContainer.AddChild(CreateToggleOption(GetPropertyInfo(nameof(BalancingEnabled))));
+            _optionContainer.AddChild(CreateToggleOption(GetPropertyInfo(nameof(PerCharacterEnabled))));
         }
 
-        _optionContainer.AddChild(CreateToggleOption(GetPropertyInfo(nameof(BalancingEnabled))));
+        _optionContainer.AddChild(CreateDividerControl());
+
         CreateLineEdit(nameof(CurrencyGainedLastRunText), 20);
         CreateLineEdit(nameof(CurrencyText), 50, true);
+
+        _optionContainer.AddChild(CreateDividerControl());
+        _optionContainer.AddChild(CreateDividerControl());
+        AddCharacterTitle(_optionContainer);
+        _optionContainer.AddChild(CreateDividerControl());
         _optionContainer.AddChild(CreateDividerControl());
 
         _optionContainer.AddChild(CreateSectionHeader("Tier 1 upgrades"));
@@ -48,15 +58,57 @@ internal class PP : SimpleModConfig
         CreateUpgradeableUi(Upgrades.MaxHealth, UpgradeButtonMaxHealth);
         CreateUpgradeableUi(Upgrades.TravelCurrency, UpgradeButtonTravelCurrency);
 
+        SetLocked();
         UpdateCurrentValues();
-        Tier2Upgrades(optionContainer);
+        Tier2Upgrades(_optionContainer);
         UpdateCurrentValues();
-        Tier3Upgrades(optionContainer);
+        Tier3Upgrades(_optionContainer);
         UpdateCurrentValues();
-        Tier4Upgrades(optionContainer);
+        Tier4Upgrades(_optionContainer);
         UpdateCurrentValues();
-        Tier5Upgrades(optionContainer);
+        Tier5Upgrades(_optionContainer);
         UpdateUi();
+    }
+
+    private void AddCharacterTitle(Control optionContainer)
+    {
+        switch (SelectedCharacter)
+        {
+            case CharEnum.Ironclad:
+                optionContainer.AddChild(CreateSectionHeader("The Ironclad"));
+                break;
+            case CharEnum.Silent:
+                optionContainer.AddChild(CreateSectionHeader("The Silent"));
+                break;
+            case CharEnum.Regent:
+                optionContainer.AddChild(CreateSectionHeader("The Regent"));
+                break;
+            case CharEnum.Necrobinder:
+                optionContainer.AddChild(CreateSectionHeader("The Necrobinder"));
+                break;
+            case CharEnum.Defect:
+                optionContainer.AddChild(CreateSectionHeader("The Defect"));
+                break;
+            case CharEnum.ModdedCharacter:
+            default:
+                optionContainer.AddChild(CreateSectionHeader("The Unknown"));
+                break;
+        }
+    }
+
+    private static void SetLocked()
+    {
+        Upgrades.AscensionCurrency.Unlocked = false;
+        Upgrades.CurrencyInterest.Unlocked = false;
+        Upgrades.DexterityGain.Unlocked = false;
+        Upgrades.UncommonRelic.Unlocked = false;
+        Upgrades.CardUpgrades.Unlocked = false;
+        Upgrades.StrengthGain.Unlocked = false;
+        Upgrades.CommonRelic.Unlocked = false;
+        Upgrades.CardRarity.Unlocked = false;
+        Upgrades.BlockGain.Unlocked = false;
+        Upgrades.RareRelic.Unlocked = false;
+        Upgrades.GoldGain.Unlocked = false;
     }
 
     private void Tier2Upgrades(Control optionContainer)
@@ -65,18 +117,6 @@ internal class PP : SimpleModConfig
         {
             optionContainer.AddChild(CreateSectionHeader("..some beings... ..are yet to... ..be revealed..."));
             optionContainer.AddChild(CreateSectionHeader("???"));
-
-            Upgrades.AscensionCurrency.Unlocked = false;
-            Upgrades.CurrencyInterest.Unlocked = false;
-            Upgrades.DexterityGain.Unlocked = false;
-            Upgrades.UncommonRelic.Unlocked = false;
-            Upgrades.CardUpgrades.Unlocked = false;
-            Upgrades.StrengthGain.Unlocked = false;
-            Upgrades.CommonRelic.Unlocked = false;
-            Upgrades.CardRarity.Unlocked = false;
-            Upgrades.BlockGain.Unlocked = false;
-            Upgrades.RareRelic.Unlocked = false;
-            Upgrades.GoldGain.Unlocked = false;
         }
         else
         {
@@ -145,14 +185,28 @@ internal class PP : SimpleModConfig
         }
     }
 
+    // Enums
+    public enum CharEnum
+    {
+        Ironclad,
+        Silent,
+        Regent,
+        Necrobinder,
+        Defect,
+        ModdedCharacter
+    }
+
     // Checkboxes
     public static bool CommonRelicValue { get; set; }
+    public static ulong CommonRelicValueSaved { get; set; }
     public static int CommonRelicLevel { get; set; }
 
     public static bool UncommonRelicValue { get; set; }
+    public static ulong UncommonRelicValueSaved { get; set; }
     public static int UncommonRelicLevel { get; set; }
 
     public static bool RareRelicValue { get; set; }
+    public static ulong RareRelicValueSaved { get; set; }
     public static int RareRelicLevel { get; set; }
 
     // Sliders
@@ -163,141 +217,153 @@ internal class PP : SimpleModConfig
     public static double GlobalValueMultiplier { get; set; } = 100.0;
 
     [ConfigSlider(0.0, 1000.0, Format = "{0:0} gold")]
-    public static double StartGoldValue { get; set; }
-    public static int StartGoldLevel { get; set; }
+    public static double StartGoldValue { get; set; } // Currently applied value accessible in-game in mod menu
+    public static ulong StartGoldValueSaved { get; set; } // Saved values (10 bits per character)
+    public static int StartGoldLevel { get; set; } // Unlocked max level (5 bits per character)
 
     [ConfigSlider(0.0, 1000.0, Format = "{0:0}%")]
     public static double CurrencyGainValue { get; set; }
+    public static ulong CurrencyGainValueSaved { get; set; }
     public static int CurrencyGainLevel { get; set; }
 
     [ConfigSlider(0.0, 1000.0, Format = "{0:0} hp")]
     public static double MaxHealthValue { get; set; }
+    public static ulong MaxHealthValueSaved { get; set; }
     public static int MaxHealthLevel { get; set; }
 
     [ConfigSlider(0.0, 1000.0, Format = "{0:0} card(s)")]
     public static double CardUpgradesValue { get; set; }
+    public static ulong CardUpgradesValueSaved { get; set; }
     public static int CardUpgradesLevel { get; set; }
 
     [ConfigSlider(0.0, 1000.0, Format = "{0:0}%")]
     public static double CurrencyInterestValue { get; set; }
+    public static ulong CurrencyInterestValueSaved { get; set; }
     public static int CurrencyInterestLevel { get; set; }
 
     [ConfigSlider(0.0, 1000.0, Format = "{0:0}%")]
     public static double GoldGainValue { get; set; }
+    public static ulong GoldGainValueSaved { get; set; }
     public static int GoldGainLevel { get; set; }
 
     [ConfigSlider(0.0, 1000.0, Format = "{0:0} block")]
     public static double BlockGainValue { get; set; }
+    public static ulong BlockGainValueSaved { get; set; }
     public static int BlockGainLevel { get; set; }
 
     [ConfigSlider(0.0, 1000.0, Format = "{0:0}%")]
     public static double CardRarityValue { get; set; }
+    public static ulong CardRarityValueSaved { get; set; }
     public static int CardRarityLevel { get; set; }
 
     [ConfigSlider(0.0, 1000.0, Format = "{0:0} str")]
     public static double StrengthGainValue { get; set; }
+    public static ulong StrengthGainValueSaved { get; set; }
     public static int StrengthGainLevel { get; set; }
 
     [ConfigSlider(0.0, 1000.0, Format = "{0:0} dex")]
     public static double DexterityGainValue { get; set; }
+    public static ulong DexterityGainValueSaved { get; set; }
     public static int DexterityGainLevel { get; set; }
 
     [ConfigSlider(0.0, 1000.0, Format = "{0:0} ₵")]
     public static double TravelCurrencyValue { get; set; }
+    public static ulong TravelCurrencyValueSaved { get; set; }
     public static int TravelCurrencyLevel { get; set; }
 
     [ConfigSlider(0.0, 1000.0, Format = "{0:0} %")]
     public static double AscensionCurrencyValue { get; set; }
+    public static ulong AscensionCurrencyValueSaved { get; set; }
     public static int AscensionCurrencyLevel { get; set; }
 
     // Buttons
     public void UpgradeButtonAscensionCurrency()
     {
-        if (IsLevelUpSuccessful(Upgrades.AscensionCurrency)) AscensionCurrencyLevel++;
+        if (IsLevelUpSuccessful(Upgrades.AscensionCurrency)) AscensionCurrencyLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonTravelCurrency()
     {
-        if (IsLevelUpSuccessful(Upgrades.TravelCurrency)) TravelCurrencyLevel++;
+        if (IsLevelUpSuccessful(Upgrades.TravelCurrency)) TravelCurrencyLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonRareRelic()
     {
-        if (IsLevelUpSuccessful(Upgrades.RareRelic)) RareRelicLevel++;
+        if (IsLevelUpSuccessful(Upgrades.RareRelic)) RareRelicLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonUncommonRelic()
     {
-        if (IsLevelUpSuccessful(Upgrades.UncommonRelic)) UncommonRelicLevel++;
+        if (IsLevelUpSuccessful(Upgrades.UncommonRelic)) UncommonRelicLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonCommonRelic()
     {
-        if (IsLevelUpSuccessful(Upgrades.CommonRelic)) CommonRelicLevel++;
+        if (IsLevelUpSuccessful(Upgrades.CommonRelic)) CommonRelicLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonDexterityGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.DexterityGain)) DexterityGainLevel++;
+        if (IsLevelUpSuccessful(Upgrades.DexterityGain)) DexterityGainLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonStrengthGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.StrengthGain)) StrengthGainLevel++;
+        if (IsLevelUpSuccessful(Upgrades.StrengthGain)) StrengthGainLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonCardRarity()
     {
-        if (IsLevelUpSuccessful(Upgrades.CardRarity)) CardRarityLevel++;
+        if (IsLevelUpSuccessful(Upgrades.CardRarity)) CardRarityLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonBlockGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.BlockGain)) BlockGainLevel++;
+        if (IsLevelUpSuccessful(Upgrades.BlockGain)) BlockGainLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonGoldGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.GoldGain)) GoldGainLevel++;
+        if (IsLevelUpSuccessful(Upgrades.GoldGain)) GoldGainLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonCurrencyInterest()
     {
-        if (IsLevelUpSuccessful(Upgrades.CurrencyInterest)) CurrencyInterestLevel++;
+        if (IsLevelUpSuccessful(Upgrades.CurrencyInterest)) CurrencyInterestLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonCardUpgrades()
     {
-        if (IsLevelUpSuccessful(Upgrades.CardUpgrades)) CardUpgradesLevel++;
+        if (IsLevelUpSuccessful(Upgrades.CardUpgrades)) CardUpgradesLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonMaxHealth()
     {
-        if (IsLevelUpSuccessful(Upgrades.MaxHealth)) MaxHealthLevel++;
+        if (IsLevelUpSuccessful(Upgrades.MaxHealth)) MaxHealthLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonCurrencyGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.CurrencyGain)) CurrencyGainLevel++;
+        if (IsLevelUpSuccessful(Upgrades.CurrencyGain)) CurrencyGainLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonStartGold()
     {
-        if (IsLevelUpSuccessful(Upgrades.StartGold)) StartGoldLevel++;
+        if (IsLevelUpSuccessful(Upgrades.StartGold)) StartGoldLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
@@ -320,6 +386,33 @@ internal class PP : SimpleModConfig
         CurrencyAvailable = Math.Clamp(CurrencyAvailable, 0, 999999);
     }
 
+    public static int GetUpgLevel(int currentLevel)
+    {
+        return currentLevel >> GetShift(5) & 0b11111;
+    }
+
+    private static void SetUpgLevel(ref int currentLevel, int newLevel)
+    {
+        var bitMask = 0b11111 << GetShift(5);
+        currentLevel = currentLevel & ~bitMask | newLevel << GetShift(5);
+    }
+
+    public static double GetUpgValue(ulong upgValue)
+    {
+        return upgValue >> GetShift(10) & 0b1111111111ul;
+    }
+
+    private static ulong SetUpgValue(ulong upgValue, ulong newValue)
+    {
+        var bitMask = 0b1111111111ul << GetShift(10);
+        return upgValue & ~bitMask | newValue << GetShift(10);
+    }
+
+    private static int GetShift(int bits)
+    {
+        return PerCharacterEnabled ? (int)SelectedCharacter * bits : (int)CharEnum.ModdedCharacter * bits;
+    }
+
     private void UpdateUi()
     {
         UpdateCurrentValues();
@@ -340,7 +433,7 @@ internal class PP : SimpleModConfig
         {
             var propertyInfo = GetPropertyInfo(upg.CurrentLevelName);
             upg.CurrentLevel = (int)(propertyInfo.GetValue(Upgrades) ?? throw new InvalidOperationException());
-            totalCurrentLevels += upg.CurrentLevel;
+            totalCurrentLevels += GetUpgLevel(upg.CurrentLevel);
         }
 
         Upgrades.TotalCurrentLevels = totalCurrentLevels;
@@ -362,7 +455,7 @@ internal class PP : SimpleModConfig
         if (sliderRow?.SettingControl is not NConfigSlider slider) return;
 
         IsArraySafe(upg, upg.Vals);
-        var maxSliderValue = upg.Vals[upg.CurrentLevel] * (GlobalValueMultiplier / 100.0);
+        var maxSliderValue = upg.Vals[GetUpgLevel(upg.CurrentLevel)] * (GlobalValueMultiplier / 100.0);
         if (maxSliderValue <= 0)
         {
             slider.Visible = false;
@@ -378,7 +471,7 @@ internal class PP : SimpleModConfig
     {
         var checkboxRow = _optionContainer?.GetNode<NConfigOptionRow>(upg.ValueName);
         if (checkboxRow?.SettingControl is not NConfigTickbox checkbox) return;
-        checkbox.Visible = upg.CurrentLevel >= upg.MaxLevel;
+        checkbox.Visible = GetUpgLevel(upg.CurrentLevel) >= upg.MaxLevel;
     }
 
     private void UpdateButtons(UpgradeableModel upg)
@@ -386,7 +479,7 @@ internal class PP : SimpleModConfig
         var buttonRow = _optionContainer?.GetNode<NConfigOptionRow>(upg.ButtonName);
         if (buttonRow?.SettingControl is not NConfigButton button) return;
 
-        if (upg.CurrentLevel >= upg.MaxLevel)
+        if (GetUpgLevel(upg.CurrentLevel) >= upg.MaxLevel)
         {
             (button.GetChild(1) as Label)!.Text = "Maxed out!";
             return;
@@ -394,20 +487,21 @@ internal class PP : SimpleModConfig
 
         IsArraySafe(upg, upg.UpgCosts);
         (button.GetChild(1) as Label)!.Text =
-            upg.UpgCosts[upg.CurrentLevel] <= 0
+            upg.UpgCosts[GetUpgLevel(upg.CurrentLevel)] <= 0
                 ? "Free!"
-                : ((int)(upg.UpgCosts[upg.CurrentLevel] * (GlobalCostMultiplier / 100))).ToString();
+                : ((int)(upg.UpgCosts[GetUpgLevel(upg.CurrentLevel)] * (GlobalCostMultiplier / 100))).ToString();
     }
 
     private bool IsLevelUpSuccessful(UpgradeableModel upg)
     {
-        if (upg.CurrentLevel >= upg.MaxLevel) return false;
+        if (GetUpgLevel(upg.CurrentLevel) >= upg.MaxLevel) return false;
         if (!IsArraySafe(upg, upg.UpgCosts)) return false;
-        if (upg.UpgCosts[upg.CurrentLevel] * (GlobalCostMultiplier / 100) > CurrencyAvailable) return false;
+        if (upg.UpgCosts[GetUpgLevel(upg.CurrentLevel)] * (GlobalCostMultiplier / 100) > CurrencyAvailable)
+            return false;
 
-        RemoveCurrencyFromAvailable((int)(upg.UpgCosts[upg.CurrentLevel] * (GlobalCostMultiplier / 100)));
-        upg.CurrentLevel++;
-        MF.Log.Info($"Upgraded {upg.ValueName[..^"Value".Length]} to level {upg.CurrentLevel}");
+        RemoveCurrencyFromAvailable((int)(upg.UpgCosts[GetUpgLevel(upg.CurrentLevel)] * (GlobalCostMultiplier / 100)));
+        SetUpgLevel(ref upg.CurrentLevel, GetUpgLevel(upg.CurrentLevel) + 1);
+        MF.Log.Info($"Upgraded {upg.ValueName[..^"Value".Length]} to level {GetUpgLevel(upg.CurrentLevel)}");
         return true;
     }
 
@@ -450,11 +544,11 @@ internal class PP : SimpleModConfig
 
     private bool IsArraySafe(UpgradeableModel upg, Array<int> upgArray)
     {
-        if (upg.CurrentLevel <= upgArray.Count - 1 || upg.CurrentLevel == 0) return true;
+        if (GetUpgLevel(upg.CurrentLevel) <= upgArray.Count - 1 || GetUpgLevel(upg.CurrentLevel) == 0) return true;
 
-        MF.Log.Error($"{upg.CurrentLevelName}: Current level ({upg.CurrentLevel}) is higher than values " +
+        MF.Log.Error($"{upg.CurrentLevelName}: Current level ({GetUpgLevel(upg.CurrentLevel)}) is higher than values " +
                      $"available ({upgArray.Count - 1}). Lowering value to max level available");
-        upg.CurrentLevel = upgArray.Count - 1;
+        SetUpgLevel(ref upg.CurrentLevel, upgArray.Count - 1);
         GetPropertyInfo(upg.CurrentLevelName).SetValue(Upgrades, upg.CurrentLevel);
         return false;
     }
@@ -475,6 +569,8 @@ internal class PP : SimpleModConfig
     {
         if (BaseHp == 9999 || BaseGold == 9999) return; // Naive fix to not update text when random is selected
 
+        SaveValues();
+
         var hp = BaseHp;
         if (BalancingEnabled) hp = (int)(hp * 0.9);
         var hpText = (hp + (int)MaxHealthValue).ToString();
@@ -484,5 +580,45 @@ internal class PP : SimpleModConfig
         if (BalancingEnabled) gold = 0;
         var goldText = (gold + (int)StartGoldValue).ToString();
         MF.GoldRefLabel?.SetTextAutoSize(goldText);
+    }
+
+    private static void SaveValues()
+    {
+        CommonRelicValueSaved = SetUpgValue(CommonRelicValueSaved, CommonRelicValue ? (ulong)1 : 0);
+        UncommonRelicValueSaved = SetUpgValue(UncommonRelicValueSaved, UncommonRelicValue ? (ulong)1 : 0);
+        RareRelicValueSaved = SetUpgValue(RareRelicValueSaved, RareRelicValue ? (ulong)1 : 0);
+
+        StartGoldValueSaved = SetUpgValue(StartGoldValueSaved, (ulong)StartGoldValue);
+        CurrencyGainValueSaved = SetUpgValue(CurrencyGainValueSaved, (ulong)CurrencyGainValue);
+        MaxHealthValueSaved = SetUpgValue(MaxHealthValueSaved, (ulong)MaxHealthValue);
+        CardUpgradesValueSaved = SetUpgValue(CardUpgradesValueSaved, (ulong)CardUpgradesValue);
+        CurrencyInterestValueSaved = SetUpgValue(CurrencyInterestValueSaved, (ulong)CurrencyInterestValue);
+        GoldGainValueSaved = SetUpgValue(GoldGainValueSaved, (ulong)GoldGainValue);
+        BlockGainValueSaved = SetUpgValue(BlockGainValueSaved, (ulong)BlockGainValue);
+        CardRarityValueSaved = SetUpgValue(CardRarityValueSaved, (ulong)CardRarityValue);
+        StrengthGainValueSaved = SetUpgValue(StrengthGainValueSaved, (ulong)StrengthGainValue);
+        DexterityGainValueSaved = SetUpgValue(DexterityGainValueSaved, (ulong)DexterityGainValue);
+        TravelCurrencyValueSaved = SetUpgValue(TravelCurrencyValueSaved, (ulong)TravelCurrencyValue);
+        AscensionCurrencyValueSaved = SetUpgValue(AscensionCurrencyValueSaved, (ulong)AscensionCurrencyValue);
+    }
+
+    public static void LoadValues()
+    {
+        CommonRelicValue = GetUpgValue(CommonRelicValueSaved) > 0.5;
+        UncommonRelicValue = GetUpgValue(UncommonRelicValueSaved) > 0.5;
+        RareRelicValue = GetUpgValue(RareRelicValueSaved) > 0.5;
+
+        StartGoldValue = GetUpgValue(StartGoldValueSaved);
+        CurrencyGainValue = GetUpgValue(CurrencyGainValueSaved);
+        MaxHealthValue = GetUpgValue(MaxHealthValueSaved);
+        CardUpgradesValue = GetUpgValue(CardUpgradesValueSaved);
+        CurrencyInterestValue = GetUpgValue(CurrencyInterestValueSaved);
+        GoldGainValue = GetUpgValue(GoldGainValueSaved);
+        BlockGainValue = GetUpgValue(BlockGainValueSaved);
+        CardRarityValue = GetUpgValue(CardRarityValueSaved);
+        StrengthGainValue = GetUpgValue(StrengthGainValueSaved);
+        DexterityGainValue = GetUpgValue(DexterityGainValueSaved);
+        TravelCurrencyValue = GetUpgValue(TravelCurrencyValueSaved);
+        AscensionCurrencyValue = GetUpgValue(AscensionCurrencyValueSaved);
     }
 }

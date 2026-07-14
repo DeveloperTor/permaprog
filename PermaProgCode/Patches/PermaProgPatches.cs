@@ -25,8 +25,19 @@ public static class PermaProgPatches
 {
     [HarmonyPatch(typeof(NCharacterSelectScreen), "SelectCharacter")]
     [HarmonyPostfix]
-    public static void UpdateTextHpGold(NCharacterSelectButton charSelectButton, CharacterModel characterModel)
+    public static void LoadValuesAndUpdateText(NCharacterSelectButton charSelectButton, CharacterModel characterModel)
     {
+        // TODO: handle random
+        PP.SelectedCharacter = characterModel.Title.GetFormattedText() switch {
+            "The Ironclad" => PP.CharEnum.Ironclad,
+            "The Silent" => PP.CharEnum.Silent,
+            "The Regent" => PP.CharEnum.Regent,
+            "The Necrobinder" => PP.CharEnum.Necrobinder,
+            "The Defect" => PP.CharEnum.Defect,
+            _ => PP.CharEnum.ModdedCharacter
+        };
+        PP.LoadValues();
+
         PP.BaseGold = charSelectButton.IsRandom ? 9999 : characterModel.StartingGold;
         PP.BaseHp = charSelectButton.IsRandom ? 9999 : characterModel.StartingHp;
         PP.UpdateCharacterSelectHpGold(null, EventArgs.Empty);
@@ -154,9 +165,9 @@ public static class PermaProgPatches
         PP.CurrencyToGain = 0;
         PP.RunOngoing = true;
 
-        foreach (var upg in PP.Upgrades.All.Keys.Where(upg => upg.CurrentLevel > 0))
+        foreach (var upg in PP.Upgrades.All.Keys.Where(upg => PP.GetUpgLevel(upg.CurrentLevel) > 0))
         {
-            MF.Log.Info($"{upg.CurrentLevelName} is level {upg.CurrentLevel}");
+            MF.Log.Info($"{upg.CurrentLevelName} is level {PP.GetUpgLevel(upg.CurrentLevel)}");
         }
     }
 
