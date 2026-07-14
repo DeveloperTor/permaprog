@@ -22,6 +22,7 @@ internal class PP : SimpleModConfig
     public static string CurrencyText { get; set; } = "0";
     public static string CurrencyGainedLastRunText { get; set; } = "0";
     public static bool BalancingEnabled { get; set; } = false;
+    public static bool PerCharacterEnabled { get; set; } = true;
 
     public override void SetupConfigUI(Control optionContainer)
     {
@@ -36,9 +37,10 @@ internal class PP : SimpleModConfig
             _optionContainer.AddChild(CreateSliderOption(GetPropertyInfo(nameof(GlobalCostMultiplier))));
             _optionContainer.AddChild(CreateSliderOption(GetPropertyInfo(nameof(GlobalValueMultiplier))));
             _optionContainer.AddChild(CreateDividerControl());
+            _optionContainer.AddChild(CreateToggleOption(GetPropertyInfo(nameof(BalancingEnabled))));
+            _optionContainer.AddChild(CreateToggleOption(GetPropertyInfo(nameof(PerCharacterEnabled))));
         }
 
-        _optionContainer.AddChild(CreateToggleOption(GetPropertyInfo(nameof(BalancingEnabled))));
         _optionContainer.AddChild(CreateDividerControl());
 
         CreateLineEdit(nameof(CurrencyGainedLastRunText), 20);
@@ -215,9 +217,9 @@ internal class PP : SimpleModConfig
     public static double GlobalValueMultiplier { get; set; } = 100.0;
 
     [ConfigSlider(0.0, 1000.0, Format = "{0:0} gold")]
-    public static double StartGoldValue { get; set; }
-    public static ulong StartGoldValueSaved { get; set; }
-    public static int StartGoldLevel { get; set; }
+    public static double StartGoldValue { get; set; } // Currently applied value accessible in-game in mod menu
+    public static ulong StartGoldValueSaved { get; set; } // Saved values (10 bits per character)
+    public static int StartGoldLevel { get; set; } // Unlocked max level (5 bits per character)
 
     [ConfigSlider(0.0, 1000.0, Format = "{0:0}%")]
     public static double CurrencyGainValue { get; set; }
@@ -277,91 +279,91 @@ internal class PP : SimpleModConfig
     // Buttons
     public void UpgradeButtonAscensionCurrency()
     {
-        if (IsLevelUpSuccessful(Upgrades.AscensionCurrency)) AscensionCurrencyLevel += 1 << (int)SelectedCharacter * 5;
+        if (IsLevelUpSuccessful(Upgrades.AscensionCurrency)) AscensionCurrencyLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonTravelCurrency()
     {
-        if (IsLevelUpSuccessful(Upgrades.TravelCurrency)) TravelCurrencyLevel += 1 << (int)SelectedCharacter * 5;
+        if (IsLevelUpSuccessful(Upgrades.TravelCurrency)) TravelCurrencyLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonRareRelic()
     {
-        if (IsLevelUpSuccessful(Upgrades.RareRelic)) RareRelicLevel += 1 << (int)SelectedCharacter * 5;
+        if (IsLevelUpSuccessful(Upgrades.RareRelic)) RareRelicLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonUncommonRelic()
     {
-        if (IsLevelUpSuccessful(Upgrades.UncommonRelic)) UncommonRelicLevel += 1 << (int)SelectedCharacter * 5;
+        if (IsLevelUpSuccessful(Upgrades.UncommonRelic)) UncommonRelicLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonCommonRelic()
     {
-        if (IsLevelUpSuccessful(Upgrades.CommonRelic)) CommonRelicLevel += 1 << (int)SelectedCharacter * 5;
+        if (IsLevelUpSuccessful(Upgrades.CommonRelic)) CommonRelicLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonDexterityGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.DexterityGain)) DexterityGainLevel += 1 << (int)SelectedCharacter * 5;
+        if (IsLevelUpSuccessful(Upgrades.DexterityGain)) DexterityGainLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonStrengthGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.StrengthGain)) StrengthGainLevel += 1 << (int)SelectedCharacter * 5;
+        if (IsLevelUpSuccessful(Upgrades.StrengthGain)) StrengthGainLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonCardRarity()
     {
-        if (IsLevelUpSuccessful(Upgrades.CardRarity)) CardRarityLevel += 1 << (int)SelectedCharacter * 5;
+        if (IsLevelUpSuccessful(Upgrades.CardRarity)) CardRarityLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonBlockGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.BlockGain)) BlockGainLevel += 1 << (int)SelectedCharacter * 5;
+        if (IsLevelUpSuccessful(Upgrades.BlockGain)) BlockGainLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonGoldGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.GoldGain)) GoldGainLevel += 1 << (int)SelectedCharacter * 5;
+        if (IsLevelUpSuccessful(Upgrades.GoldGain)) GoldGainLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonCurrencyInterest()
     {
-        if (IsLevelUpSuccessful(Upgrades.CurrencyInterest)) CurrencyInterestLevel += 1 << (int)SelectedCharacter * 5;
+        if (IsLevelUpSuccessful(Upgrades.CurrencyInterest)) CurrencyInterestLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonCardUpgrades()
     {
-        if (IsLevelUpSuccessful(Upgrades.CardUpgrades)) CardUpgradesLevel += 1 << (int)SelectedCharacter * 5;
+        if (IsLevelUpSuccessful(Upgrades.CardUpgrades)) CardUpgradesLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonMaxHealth()
     {
-        if (IsLevelUpSuccessful(Upgrades.MaxHealth)) MaxHealthLevel += 1 << (int)SelectedCharacter * 5;
+        if (IsLevelUpSuccessful(Upgrades.MaxHealth)) MaxHealthLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonCurrencyGain()
     {
-        if (IsLevelUpSuccessful(Upgrades.CurrencyGain)) CurrencyGainLevel += 1 << (int)SelectedCharacter * 5;
+        if (IsLevelUpSuccessful(Upgrades.CurrencyGain)) CurrencyGainLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
     public void UpgradeButtonStartGold()
     {
-        if (IsLevelUpSuccessful(Upgrades.StartGold)) StartGoldLevel += 1 << (int)SelectedCharacter * 5;
+        if (IsLevelUpSuccessful(Upgrades.StartGold)) StartGoldLevel += 1 << GetShift(5);
         UpdateUi();
     }
 
@@ -386,24 +388,29 @@ internal class PP : SimpleModConfig
 
     public static int GetUpgLevel(int currentLevel)
     {
-        return currentLevel >> (int)SelectedCharacter * 5 & 0b11111;
+        return currentLevel >> GetShift(5) & 0b11111;
     }
 
     private static void SetUpgLevel(ref int currentLevel, int newLevel)
     {
-        var bitMask = 0b11111 << (int)SelectedCharacter * 5;
-        currentLevel = currentLevel & ~bitMask | newLevel << (int)SelectedCharacter * 5;
+        var bitMask = 0b11111 << GetShift(5);
+        currentLevel = currentLevel & ~bitMask | newLevel << GetShift(5);
     }
 
     public static double GetUpgValue(ulong upgValue)
     {
-        return upgValue >> (int)SelectedCharacter * 10 & 0b1111111111ul;
+        return upgValue >> GetShift(10) & 0b1111111111ul;
     }
 
     private static ulong SetUpgValue(ulong upgValue, ulong newValue)
     {
-        var bitMask = 0b1111111111ul << (int)SelectedCharacter * 10;
-        return upgValue & ~bitMask | newValue << (int)SelectedCharacter * 10;
+        var bitMask = 0b1111111111ul << GetShift(10);
+        return upgValue & ~bitMask | newValue << GetShift(10);
+    }
+
+    private static int GetShift(int bits)
+    {
+        return PerCharacterEnabled ? (int)SelectedCharacter * bits : (int)CharEnum.ModdedCharacter * bits;
     }
 
     private void UpdateUi()

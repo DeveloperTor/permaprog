@@ -1,7 +1,8 @@
 ﻿{
   "PERMAPROG.mod_title": "永久进度商店 (PermaProg Shop)",
-  "PERMAPROG-DEBUG_MENU_ENABLED.title": "调试商店（切换后）",
-  "PERMAPROG-BALANCING_ENABLED.title": "启用平衡模式（增加难度）",
+  "PERMAPROG-DEBUG_MENU_ENABLED.title": "调试商店（切换后）:",
+  "PERMAPROG-BALANCING_ENABLED.title": "启用平衡模式（增加难度）:",
+  "PERMAPROG-PER_CHARACTER_ENABLED.title": "启用按角色计算的进度（切换后需重新进入商店）:",
   "PERMAPROG-CURRENCY_TEXT.title": "可使用的货币：",
   "PERMAPROG-CURRENCY_GAINED_LAST_RUN_TEXT.title": "上次游戏获得的货币：",
   "PERMAPROG-GLOBAL_COST_MULTIPLIER.title": "全局花费倍数（重新进入商店生效）：",
